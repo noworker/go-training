@@ -7,17 +7,17 @@ import (
 	"go_training/infrastructure/table"
 )
 
-type UserRepository struct {
+type userRepository struct {
 	DB *gorm.DB
 }
 
 func NewUserRepository(DB *gorm.DB) infrainterface.IUserRepository {
-	return  UserRepository{
+	return  userRepository{
 		DB: DB,
 	}
 }
 
-func (repository UserRepository) Activate(userId model.UserId, password model.Password) error {
+func (repository userRepository) Activate(userId model.UserId, password model.Password) error {
 	user := table.User{}
 	conn := map[string]interface{} {
 		"user_id": userId,
@@ -32,7 +32,7 @@ func (repository UserRepository) Activate(userId model.UserId, password model.Pa
 	return nil
 }
 
-func (repository UserRepository) CheckIfActivated(userId model.UserId, password model.Password) (bool, error) {
+func (repository userRepository) CheckIfActivated(userId model.UserId, password model.Password) (bool, error) {
 	user, err := repository.GetUserByIdAndPassword(userId, password)
 	if err != nil {
 		return false, err
@@ -40,7 +40,7 @@ func (repository UserRepository) CheckIfActivated(userId model.UserId, password 
 	return user.Activated, nil
 }
 
-func (repository UserRepository) GetUserByIdAndPassword(userId model.UserId, password model.Password) (table.User, error) {
+func (repository userRepository) GetUserByIdAndPassword(userId model.UserId, password model.Password) (table.User, error) {
 	user := table.User{}
 	conn := map[string]interface{} {
 		"user_id": userId,
@@ -53,7 +53,7 @@ func (repository UserRepository) GetUserByIdAndPassword(userId model.UserId, pas
 	return user, nil
 }
 
-func (repository UserRepository) SaveUnactivatedNewUser(userId model.UserId, emailAddress model.EmailAddress, password model.Password) error {
+func (repository userRepository) SaveUnactivatedNewUser(userId model.UserId, emailAddress model.EmailAddress, password model.Password) error {
 	user := table.User{}
 	conn := map[string]interface{} {
 		"user_id": userId,
