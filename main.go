@@ -1,1 +1,5 @@
-package go_training
+package main
+
+func main() {
+
+}

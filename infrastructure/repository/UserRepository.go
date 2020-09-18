@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"crypto"
 	"github.com/jinzhu/gorm"
 	"go_training/domain/infrainterface"
 	"go_training/domain/model"
