@@ -25,11 +25,11 @@ func (repository userRepository) Activate(userId model.UserId, password model.Ha
 	user := table.User{
 		Activated: true,
 	}
-	conn2 := map[string]interface{} {
+	conn := map[string]interface{} {
 		"user_id": userId,
 	}
-	result2 := repository.DB.Where(conn2).Save(&user)
-	if err := result2.Error; err != nil {
+	result := repository.DB.Where(conn).Save(&user)
+	if err := result.Error; err != nil {
 		return err
 	}
 
@@ -83,27 +83,24 @@ func (repository userRepository) CreateUnactivatedNewUser(userId model.UserId, e
 }
 
 func (repository userRepository) createUser(userId model.UserId, emailAddress model.EmailAddress) error {
-	user := table.User{}
-	conn := map[string]interface{} {
-		"user_id": userId,
-		"email_address": emailAddress,
-		"activated": false,
+	user := table.User{
+		UserId:       table.UserId(userId),
+		EmailAddress: table.EmailAddress(emailAddress),
+		Activated:    false,
 	}
-	result := repository.DB.Where(conn).Create(&user)
+	result := repository.DB.Create(&user)
 	if err := result.Error; err != nil {
+		panic(err.Error())
 		return err
 	}
 	return nil
 }
 
 func (repository userRepository) createUserPassword(userId model.UserId, password model.HashString) error {
-	user := table.UserPassword{}
-	conn := map[string]interface{} {
-		"user_id": userId,
-		"pass_word": password,
-	}
-	result := repository.DB.Where(conn).Create(&user)
+	user := table.UserPassword{UserId: table.UserId(userId), Password: table.Password(password)}
+	result := repository.DB.Create(&user)
 	if err := result.Error; err != nil {
+		panic(err.Error())
 		return err
 	}
 	return nil

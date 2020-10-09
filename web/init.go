@@ -26,7 +26,7 @@ func Init(conf config.Config, db *gorm.DB) Handlers {
 	e := echo.New()
 
 	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
+	//e.Use(middleware.Recover())
 
 	e.POST(fmt.Sprintf("%s/create_user", apiPrefix), createUserHandler.CreateUser)
 
