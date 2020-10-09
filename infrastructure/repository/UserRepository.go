@@ -18,16 +18,10 @@ func NewUserRepository(DB *gorm.DB) infrainterface.IUserRepository {
 }
 
 func (repository userRepository) Activate(userId model.UserId, password model.Password) error {
-	userPassword := table.UserPassword{}
-	conn := map[string]interface{} {
-		"user_id": userId,
-		"password": password,
-	}
-	result := repository.DB.Where(conn).Find(&userPassword)
-	if err := result.Error; err != nil {
+	err := repository.checkIfUserExists(userId, password)
+	if err != nil {
 		return err
 	}
-
 	user := table.User{
 		Activated: true,
 	}
@@ -40,6 +34,19 @@ func (repository userRepository) Activate(userId model.UserId, password model.Pa
 	}
 
 	return nil
+}
+
+func (repository userRepository) checkIfUserExists(userId model.UserId, password model.Password) error {
+	userPassword := table.UserPassword{}
+	conn := map[string]interface{} {
+		"user_id": userId,
+		"password": password,
+	}
+	result := repository.DB.Where(conn).Find(&userPassword)
+	if err := result.Error; err != nil {
+		return err
+	}
+	return  nil
 }
 
 //func (repository userRepository) CheckIfActivated(userId model.UserId, password model.Password) (bool, error) {
