@@ -5,6 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"go_training/domain/model"
 	"go_training/lib"
+	"net/http"
 )
 
 type CreateUserHandler struct {
@@ -23,5 +24,5 @@ func(handler CreateUserHandler) CreateUser(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return nil
+	return c.String(http.StatusOK, "200 OK")
 }
