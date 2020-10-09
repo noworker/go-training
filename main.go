@@ -1,8 +1,11 @@
 package main
 
 import (
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
 	"github.com/joho/godotenv"
-	"go_training/initializer"
+	"go_training/config"
+	"go_training/web"
 	"log"
 )
 
@@ -11,5 +14,15 @@ func main() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-	initializer.Init()
+	start()
+}
+
+func start() {
+	conf := config.NewConfig()
+	db, err := gorm.Open("mysql", conf.DB.GetSettingStr())
+	if err != nil {
+		panic(err.Error())
+	}
+	defer db.Close()
+	web.Init(conf, db)
 }

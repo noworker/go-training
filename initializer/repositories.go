@@ -7,12 +7,12 @@ import (
 )
 
 type Repositories struct {
-	userRepository infrainterface.IUserRepository
+	UserRepository infrainterface.IUserRepository
 }
 
 func InitRepositories(db *gorm.DB) Repositories {
 	userRepository := repository.NewUserRepository(db)
 	return Repositories{
-		userRepository: userRepository,
+		UserRepository: userRepository,
 	}
 }
