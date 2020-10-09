@@ -17,7 +17,7 @@ func NewUserRepository(DB *gorm.DB) infrainterface.IUserRepository {
 	}
 }
 
-func (repository userRepository) Activate(userId model.UserId, password model.Password) error {
+func (repository userRepository) Activate(userId model.UserId, password model.HashString) error {
 	err := repository.checkIfUserExists(userId, password)
 	if err != nil {
 		return err
@@ -36,7 +36,7 @@ func (repository userRepository) Activate(userId model.UserId, password model.Pa
 	return nil
 }
 
-func (repository userRepository) checkIfUserExists(userId model.UserId, password model.Password) error {
+func (repository userRepository) checkIfUserExists(userId model.UserId, password model.HashString) error {
 	userPassword := table.UserPassword{}
 	conn := map[string]interface{} {
 		"user_id": userId,
@@ -49,7 +49,7 @@ func (repository userRepository) checkIfUserExists(userId model.UserId, password
 	return  nil
 }
 
-//func (repository userRepository) CheckIfActivated(userId model.UserId, password model.Password) (bool, error) {
+//func (repository userRepository) CheckIfActivated(userId model.UserId, password model.HashStringPassword) (bool, error) {
 //	user, err := repository.GetUserByIdAndPassword(userId, password)
 //	if err != nil {
 //		return false, err
@@ -57,7 +57,7 @@ func (repository userRepository) checkIfUserExists(userId model.UserId, password
 //	return user.Activated, nil
 //}
 
-//func (repository userRepository) GetUserByIdAndPassword(userId model.UserId, password model.Password) (table.User, error) {
+//func (repository userRepository) GetUserByIdAndPassword(userId model.UserId, password model.HashStringPassword) (table.User, error) {
 //	user := table.User{}
 //	conn := map[string]interface{} {
 //		"user_id": userId,
@@ -70,7 +70,7 @@ func (repository userRepository) checkIfUserExists(userId model.UserId, password
 //	return user, nil
 //}
 
-func (repository userRepository) CreateUnactivatedNewUser(userId model.UserId, emailAddress model.EmailAddress, password model.Password) error {
+func (repository userRepository) CreateUnactivatedNewUser(userId model.UserId, emailAddress model.EmailAddress, password model.HashString) error {
 	err := repository.createUser(userId, emailAddress)
 	if err != nil {
 		return err
@@ -96,7 +96,7 @@ func (repository userRepository) createUser(userId model.UserId, emailAddress mo
 	return nil
 }
 
-func (repository userRepository) createUserPassword(userId model.UserId, password model.Password) error {
+func (repository userRepository) createUserPassword(userId model.UserId, password model.HashString) error {
 	user := table.UserPassword{}
 	conn := map[string]interface{} {
 		"user_id": userId,

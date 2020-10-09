@@ -6,8 +6,8 @@ import (
 	"go_training/domain/model"
 )
 
-func MakeHashedString(s string) model.HashedString {
+func MakeHashedString(s string) model.HashString{
 	r := sha256.Sum256([]byte(s))
-	return model.HashedString(hex.EncodeToString(r[:]))
+	return model.HashString(hex.EncodeToString(r[:]))
 }
 

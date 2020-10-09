@@ -1,8 +1,8 @@
 package model
 
-type Password HashedString
+type HashString string
 
 type UserPassword struct {
 	UserId
-	Password
+	Password HashString
 }
