@@ -1,0 +1,10 @@
+
+-- +migrate Up
+CREATE TABLE IF NOT EXISTS `user_passwords` (
+  `user_id` VARCHAR(255) NOT NULL PRIMARY KEY,
+  `password` VARCHAR(255) NOT NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+-- +migrate Down
+DROP TABLE IF EXISTS `user_passwords`;
