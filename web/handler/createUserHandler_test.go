@@ -54,7 +54,7 @@ func TestCreateUserHandlerNoErrorCase(t *testing.T) {
 	}
 }
 
-func TestCreateUserHandlerErrorCase(t *testing.T) {
+func TestCreateUserHandlerErrorCase1(t *testing.T) {
 	repo := repository.NewUserRepositoryMock(existingUserId)
 	handlers := InitHandler(initializer.Repositories{UserRepository: repo})
 	e := NewRouter(handlers)
@@ -62,7 +62,6 @@ func TestCreateUserHandlerErrorCase(t *testing.T) {
 
 	userId := "abcde"
 	emailAddress := "abc@example.com"
-	password := "12345678"
 
 	form1.Set("user_id", userId)
 	form1.Set("email_address", emailAddress)
@@ -77,19 +76,50 @@ func TestCreateUserHandlerErrorCase(t *testing.T) {
 	if !assert.Equal(t, http.StatusBadRequest, rec1.Code) {
 		t.Error("error")
 	}
+}
 
-	form2 := make(url.Values)
-	form2.Set("user_id", userId)
-	form2.Set("email_address", "aaaexample.com")
-	form2.Set("password", password)
+func TestCreateUserHandlerErrorCase2(t *testing.T) {
+	repo := repository.NewUserRepositoryMock(existingUserId)
+	handlers := InitHandler(initializer.Repositories{UserRepository: repo})
+	e := NewRouter(handlers)
 
-	req2 := httptest.NewRequest(http.MethodPost, "/api/users", strings.NewReader(form1.Encode()))
-	req2.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
-	rec2 := httptest.NewRecorder()
+	userId := "abcde"
+	password := "12345678"
 
-	e.ServeHTTP(rec2, req2)
+	form := make(url.Values)
+	form.Set("user_id", userId)
+	form.Set("email_address", "aaaexample.com")
+	form.Set("password", password)
 
-	if !assert.Equal(t, http.StatusBadRequest, rec2.Code) {
+	req := httptest.NewRequest(http.MethodPost, "/api/users", strings.NewReader(form.Encode()))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
+	rec := httptest.NewRecorder()
+
+	e.ServeHTTP(rec, req)
+
+	if !assert.Equal(t, http.StatusBadRequest, rec.Code) {
+		t.Error("error")
+	}
+}
+
+func TestCreateUserHandlerErrorCase3(t *testing.T) {
+	repo := repository.NewUserRepositoryMock(existingUserId)
+	handlers := InitHandler(initializer.Repositories{UserRepository: repo})
+	e := NewRouter(handlers)
+
+	userId := "abcde"
+
+	form := make(url.Values)
+	form.Set("user_id", userId)
+	form.Set("email_address", "aaaexample.com")
+
+	req := httptest.NewRequest(http.MethodPost, "/api/users", strings.NewReader(form.Encode()))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
+	rec := httptest.NewRecorder()
+
+	e.ServeHTTP(rec, req)
+
+	if !assert.Equal(t, http.StatusBadRequest, rec.Code) {
 		t.Error("error")
 	}
 }
