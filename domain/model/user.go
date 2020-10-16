@@ -1,9 +1,8 @@
 package model
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"github.com/badoux/checkmail"
+	"go_training/lib"
 	"go_training/lib/errors"
 )
 
@@ -13,23 +12,17 @@ const (
 	EmailAddressNotExists     errors.ErrorMessage = "email_address not exists"
 )
 
-const (
-	PasswordNotExists  errors.ErrorMessage = "password not exists"
-	PasswordIsTooShort errors.ErrorMessage = "password is too short"
-)
-
 type UserId string
 type EmailAddress string
-type HashString string
 
 type User struct {
 	UserId
 	EmailAddress
-	Password  HashString
+	Password  lib.HashString
 	Activated bool
 }
 
-func NewUser(userIdString, emailAddressString, passwordString string) (User, error) {
+func NewUser(userIdString, emailAddressString string, password lib.HashString) (User, error) {
 	userId, err := newUserId(userIdString)
 	if err != nil {
 		return User{}, err
@@ -39,10 +32,7 @@ func NewUser(userIdString, emailAddressString, passwordString string) (User, err
 	if err != nil {
 		return User{}, err
 	}
-	password, err := newPassword(passwordString)
-	if err != nil {
-		return User{}, err
-	}
+
 	return User{UserId: userId, EmailAddress: emailAddress, Password: password}, nil
 }
 
@@ -59,16 +49,4 @@ func newEmailAddress(emailAddress string) (EmailAddress, error) {
 		return "", err
 	}
 	return EmailAddress(emailAddress), nil
-}
-
-func newPassword(password string) (HashString, error) {
-	if len(password) < 8 {
-		return "", errors.CustomError{Message: PasswordIsTooShort}
-	}
-	return MakeHashedStringFromPassword(password), nil
-}
-
-func MakeHashedStringFromPassword(s string) HashString {
-	r := sha256.Sum256([]byte(s))
-	return HashString(hex.EncodeToString(r[:]))
 }

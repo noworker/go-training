@@ -5,6 +5,7 @@ import (
 	"go_training/domain/infrainterface"
 	"go_training/domain/model"
 	"go_training/infrastructure/table"
+	"go_training/lib"
 	"go_training/lib/errors"
 )
 
@@ -18,7 +19,7 @@ func NewUserRepository(DB *gorm.DB) infrainterface.IUserRepository {
 	}
 }
 
-func (repository userRepository) Activate(userId model.UserId, password model.HashString) error {
+func (repository userRepository) Activate(userId model.UserId, password lib.HashString) error {
 	if exists, err := repository.userExists(userId, password); exists {
 		return err
 	}
@@ -36,7 +37,7 @@ func (repository userRepository) Activate(userId model.UserId, password model.Ha
 	return nil
 }
 
-func (repository userRepository) userExists(userId model.UserId, password model.HashString) (bool, error) {
+func (repository userRepository) userExists(userId model.UserId, password lib.HashString) (bool, error) {
 	userPassword := table.UserPassword{}
 	conn := map[string]interface{}{
 		"user_id":  userId,
@@ -49,7 +50,7 @@ func (repository userRepository) userExists(userId model.UserId, password model.
 	return true, errors.CustomError{Message: errors.CanNotCreateExistingUserId}
 }
 
-//func (repository userRepository) CheckIfActivated(userId model.UserId, password model.HashStringPassword) (bool, error) {
+//func (repository userRepository) CheckIfActivated(userId model.UserId, password lib.HashStringPassword) (bool, error) {
 //	user, err := repository.GetUserByIdAndPassword(userId, password)
 //	if err != nil {
 //		return false, err
@@ -57,7 +58,7 @@ func (repository userRepository) userExists(userId model.UserId, password model.
 //	return user.Activated, nil
 //}
 
-//func (repository userRepository) GetUserByIdAndPassword(userId model.UserId, password model.HashStringPassword) (table.User, error) {
+//func (repository userRepository) GetUserByIdAndPassword(userId model.UserId, password lib.HashStringPassword) (table.User, error) {
 //	user := table.User{}
 //	conn := map[string]interface{} {
 //		"user_id": userId,
@@ -97,7 +98,7 @@ func (repository userRepository) createUser(userId model.UserId, emailAddress mo
 	return nil
 }
 
-func (repository userRepository) createUserPassword(userId model.UserId, password model.HashString) error {
+func (repository userRepository) createUserPassword(userId model.UserId, password lib.HashString) error {
 	user := table.UserPassword{UserId: table.UserId(userId), Password: table.Password(password)}
 	result := repository.DB.Create(&user)
 	if err := result.Error; err != nil {

@@ -7,6 +7,7 @@ import (
 	"go_training/domain/model"
 	"go_training/infrastructure/repository"
 	"go_training/initializer"
+	"go_training/lib"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -40,7 +41,12 @@ func TestCreateUserHandlerNoErrorCase(t *testing.T) {
 		t.Error("error")
 	}
 
-	newUser, err := model.NewUser(userId, emailAddress, password)
+	hashedPassword, err := lib.MakeHashedStringFromPassword(password)
+	if err != nil {
+		t.Error(err.Error())
+	}
+
+	newUser, err := model.NewUser(userId, emailAddress, hashedPassword)
 
 	if err != nil {
 		t.Error("error")

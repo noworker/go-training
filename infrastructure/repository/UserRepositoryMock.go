@@ -2,6 +2,7 @@ package repository
 
 import (
 	"go_training/domain/model"
+	"go_training/lib"
 	"go_training/lib/errors"
 )
 
@@ -16,7 +17,7 @@ func NewUserRepositoryMock(existingUserId string) *UserRepositoryMock {
 	}
 }
 
-func (repository *UserRepositoryMock) Activate(userId model.UserId, password model.HashString) error {
+func (repository *UserRepositoryMock) Activate(userId model.UserId, password lib.HashString) error {
 	if repository.User.UserId != userId || repository.User.Password != password {
 		panic("userId or password does not match")
 	}

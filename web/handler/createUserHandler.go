@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"go_training/domain/infrainterface"
 	"go_training/domain/model"
+	"go_training/lib"
 	"go_training/web/api_error"
 	"net/http"
 )
@@ -24,7 +25,13 @@ func (handler CreateUserHandler) CreateUser(c echo.Context) error {
 		return api_error.InvalidRequestError(err)
 	}
 
-	newUser, err := model.NewUser(user.UserId, user.EmailAddress, user.Password)
+	password, err := lib.MakeHashedStringFromPassword(user.Password)
+
+	if err != nil {
+		return api_error.InvalidRequestError(err)
+	}
+
+	newUser, err := model.NewUser(user.UserId, user.EmailAddress, password)
 	if err != nil {
 		return api_error.InvalidRequestError(err)
 	}

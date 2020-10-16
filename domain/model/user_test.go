@@ -1,6 +1,9 @@
 package model
 
-import "testing"
+import (
+	"go_training/lib"
+	"testing"
+)
 
 func TestNewUser(t *testing.T) {
 	_, err := newUserId("")
@@ -11,7 +14,7 @@ func TestNewUser(t *testing.T) {
 	if err == nil {
 		t.Error("error")
 	}
-	_, err = newPassword("123")
+	_, err = lib.MakeHashedStringFromPassword("123")
 	if err == nil {
 		t.Error("error")
 	}
@@ -23,7 +26,7 @@ func TestNewUser(t *testing.T) {
 	if err != nil {
 		t.Error(err.Error())
 	}
-	_, err = newPassword("12345678")
+	_, err = lib.MakeHashedStringFromPassword("12345678")
 	if err != nil {
 		t.Error(err.Error())
 	}
