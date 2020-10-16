@@ -6,7 +6,7 @@ import (
 )
 
 func InvalidRequestError(err error) *echo.HTTPError {
-	return &echo.HTTPError{Code: 400, Message: "invalid request error", Internal: err}
+	return &echo.HTTPError{Code: 400, Message: err.Error()}
 }
 
 type ApiError struct {
