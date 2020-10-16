@@ -5,6 +5,12 @@ import (
 	"go_training/domain/infrainterface"
 	"go_training/domain/model"
 	"go_training/infrastructure/table"
+	"go_training/lib"
+	"go_training/lib/errors"
+)
+
+const (
+	CanNotCreateExistingUserId errors.ErrorMessage = "can_not_create_existing_user_id"
 )
 
 type userRepository struct {
@@ -12,20 +18,19 @@ type userRepository struct {
 }
 
 func NewUserRepository(DB *gorm.DB) infrainterface.IUserRepository {
-	return  userRepository{
+	return userRepository{
 		DB: DB,
 	}
 }
 
-func (repository userRepository) Activate(userId model.UserId, password model.HashString) error {
-	err := repository.checkIfUserExists(userId, password)
-	if err != nil {
+func (repository userRepository) Activate(userId model.UserId, password lib.HashString) error {
+	if exists, err := repository.userExists(userId, password); exists {
 		return err
 	}
 	user := table.User{
 		Activated: true,
 	}
-	conn := map[string]interface{} {
+	conn := map[string]interface{}{
 		"user_id": userId,
 	}
 	result := repository.DB.Where(conn).Save(&user)
@@ -36,20 +41,20 @@ func (repository userRepository) Activate(userId model.UserId, password model.Ha
 	return nil
 }
 
-func (repository userRepository) checkIfUserExists(userId model.UserId, password model.HashString) error {
+func (repository userRepository) userExists(userId model.UserId, password lib.HashString) (bool, error) {
 	userPassword := table.UserPassword{}
-	conn := map[string]interface{} {
-		"user_id": userId,
+	conn := map[string]interface{}{
+		"user_id":  userId,
 		"password": password,
 	}
 	result := repository.DB.Where(conn).Find(&userPassword)
-	if err := result.Error; err != nil {
-		return err
+	if result.RecordNotFound() {
+		return false, nil
 	}
-	return  nil
+	return true, errors.CustomError{Message: CanNotCreateExistingUserId}
 }
 
-//func (repository userRepository) CheckIfActivated(userId model.UserId, password model.HashStringPassword) (bool, error) {
+//func (repository userRepository) CheckIfActivated(userId model.UserId, password lib.HashStringPassword) (bool, error) {
 //	user, err := repository.GetUserByIdAndPassword(userId, password)
 //	if err != nil {
 //		return false, err
@@ -57,7 +62,7 @@ func (repository userRepository) checkIfUserExists(userId model.UserId, password
 //	return user.Activated, nil
 //}
 
-//func (repository userRepository) GetUserByIdAndPassword(userId model.UserId, password model.HashStringPassword) (table.User, error) {
+//func (repository userRepository) GetUserByIdAndPassword(userId model.UserId, password lib.HashStringPassword) (table.User, error) {
 //	user := table.User{}
 //	conn := map[string]interface{} {
 //		"user_id": userId,
@@ -70,13 +75,14 @@ func (repository userRepository) checkIfUserExists(userId model.UserId, password
 //	return user, nil
 //}
 
-func (repository userRepository) CreateUnactivatedNewUser(userId model.UserId, emailAddress model.EmailAddress, password model.HashString) error {
-	err := repository.createUser(userId, emailAddress)
-	if err != nil {
+func (repository userRepository) CreateUnactivatedNewUser(user model.User) error {
+	if exists, err := repository.userExists(user.UserId, user.Password); exists {
 		return err
 	}
-	err = repository.createUserPassword(userId, password)
-	if err != nil {
+	if err := repository.createUser(user.UserId, user.EmailAddress); err != nil {
+		return err
+	}
+	if err := repository.createUserPassword(user.UserId, user.Password); err != nil {
 		return err
 	}
 	return nil
@@ -96,7 +102,7 @@ func (repository userRepository) createUser(userId model.UserId, emailAddress mo
 	return nil
 }
 
-func (repository userRepository) createUserPassword(userId model.UserId, password model.HashString) error {
+func (repository userRepository) createUserPassword(userId model.UserId, password lib.HashString) error {
 	user := table.UserPassword{UserId: table.UserId(userId), Password: table.Password(password)}
 	result := repository.DB.Create(&user)
 	if err := result.Error; err != nil {
