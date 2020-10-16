@@ -37,5 +37,5 @@ func(handler CreateUserHandler) CreateUser(c echo.Context) error {
 		return api_error.InvalidRequestError(err)
 	}
 
-	return c.JSON(http.StatusCreated, user)
+	return  c.String(http.StatusCreated, "User is successfully created.")
 }
