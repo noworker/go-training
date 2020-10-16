@@ -5,7 +5,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/joho/godotenv"
 	"go_training/config"
-	"go_training/web"
+	"go_training/web/handler"
 	"log"
 )
 
@@ -24,5 +24,5 @@ func start() {
 		panic(err.Error())
 	}
 	defer db.Close()
-	web.Init(conf, db)
+	handler.InitServer(conf, db)
 }

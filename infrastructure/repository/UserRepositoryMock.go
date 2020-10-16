@@ -10,14 +10,16 @@ type userRepositoryMock struct {
 }
 
 type userValue struct {
+	ExistingUserId model.UserId
 	UserId model.UserId
 	EmailAddress model.EmailAddress
 	Password model.HashString
 	Activated bool
 }
 
-func NewUserRepositoryMock() infrainterface.IUserRepository {
+func NewUserRepositoryMock(existingUserId string) infrainterface.IUserRepository {
 	return  userRepositoryMock{
+		userValue{ExistingUserId: model.UserId(existingUserId)},
 	}
 }
 

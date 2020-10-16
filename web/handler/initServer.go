@@ -1,4 +1,4 @@
-package web
+package handler
 
 import (
 	"fmt"
@@ -8,25 +8,20 @@ import (
 	"go_training/config"
 	"go_training/initializer"
 	"go_training/web/api_error"
-	"go_training/web/handler"
 	"go_training/web/validator"
 )
 
-type Handlers struct {
-	CreateUserHandler handler.CreateUserHandler
-}
-
 const apiPrefix = "/api"
 
-
-
-func Init(conf config.Config, db *gorm.DB) Handlers {
+func InitServer(conf config.Config, db *gorm.DB) Handlers {
 	repositories := initializer.InitRepositories(db)
-	createUserRepository := repositories.UserRepository
-	createUserHandler := handler.CreateUserHandler{
-		UserRepository: createUserRepository,
-	}
+	handlers := InitHandler(repositories)
+	e := NewRouter(handlers)
+	e.Logger.Fatal(e.Start(":8080"))
+	return handlers
+}
 
+func NewRouter(handlers Handlers) *echo.Echo{
 	e := echo.New()
 
 	e.Validator = validator.NewValidator()
@@ -36,11 +31,8 @@ func Init(conf config.Config, db *gorm.DB) Handlers {
 	e.Use(middleware.Logger())
 	//e.Use(middleware.Recover())
 
-	e.POST(fmt.Sprintf("%s/users", apiPrefix), createUserHandler.CreateUser)
+	e.POST(fmt.Sprintf("%s/users", apiPrefix), handlers.CreateUserHandler.CreateUser)
 
-	e.Logger.Fatal(e.Start(":8080"))
-	return Handlers{
-		CreateUserHandler: createUserHandler,
-	}
+	return e
 }
 

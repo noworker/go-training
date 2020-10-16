@@ -15,6 +15,7 @@ require (
 	github.com/labstack/echo/v4 v4.1.17
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/lib/pq v1.2.0 // indirect
+	github.com/stretchr/testify v1.4.0
 	golang.org/x/crypto v0.0.0-20201001193750-eb9a90e9f9cb // indirect
 	golang.org/x/net v0.0.0-20200930145003-4acb6c075d10 // indirect
 	golang.org/x/sys v0.0.0-20200930185726-fdedc70b468f // indirect

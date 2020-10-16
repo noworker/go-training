@@ -17,7 +17,6 @@ type ApiError struct {
 func CustomHTTPErrorHandler(err error, c echo.Context) {
 	code := http.StatusInternalServerError
 	message := ""
-	// https://godoc.org/github.com/labstack/echo#HTTPError
 	if ee, ok := err.(*echo.HTTPError); ok {
 		code = ee.Code
 		message = ee.Message.(string)
