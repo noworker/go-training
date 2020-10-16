@@ -14,12 +14,12 @@ type CreateUserHandler struct {
 }
 
 type User struct {
-	UserId  string `json:"user_id" form:"user_id" validate:"required"`
+	UserId       string `json:"user_id" form:"user_id" validate:"required"`
 	EmailAddress string `json:"email_address" form:"email_address" validate:"required,email_address"`
-	Password string `json:"password" form:"password" validate:"required,password"`
+	Password     string `json:"password" form:"password" validate:"required,password"`
 }
 
-func(handler CreateUserHandler) CreateUser(c echo.Context) error {
+func (handler CreateUserHandler) CreateUser(c echo.Context) error {
 	user := new(User)
 	if err := c.Bind(user); err != nil {
 		return api_error.InvalidRequestError(err)
@@ -33,9 +33,9 @@ func(handler CreateUserHandler) CreateUser(c echo.Context) error {
 		model.UserId(user.UserId),
 		model.EmailAddress(user.EmailAddress),
 		lib.MakeHashedStringFromPassword(user.Password),
-		); err != nil {
+	); err != nil {
 		return api_error.InvalidRequestError(err)
 	}
 
-	return  c.String(http.StatusCreated, "User is successfully created.")
+	return c.String(http.StatusCreated, "User is successfully created.")
 }

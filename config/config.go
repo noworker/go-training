@@ -12,10 +12,10 @@ type Config struct {
 }
 
 type DBConfig struct {
-	Host string
+	Host     string
 	UserName string
 	Password string
-	Name string
+	Name     string
 	Location string
 }
 

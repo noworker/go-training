@@ -11,14 +11,14 @@ type UserRepositoryMock struct {
 
 type userValue struct {
 	ExistingUserId model.UserId
-	UserId model.UserId
-	EmailAddress model.EmailAddress
-	Password model.HashString
-	Activated bool
+	UserId         model.UserId
+	EmailAddress   model.EmailAddress
+	Password       model.HashString
+	Activated      bool
 }
 
 func NewUserRepositoryMock(existingUserId string) *UserRepositoryMock {
-	return  &UserRepositoryMock{
+	return &UserRepositoryMock{
 		userValue{ExistingUserId: model.UserId(existingUserId)},
 	}
 }

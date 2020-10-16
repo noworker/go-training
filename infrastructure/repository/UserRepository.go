@@ -8,13 +8,12 @@ import (
 	"go_training/lib/errors"
 )
 
-
 type userRepository struct {
 	DB *gorm.DB
 }
 
 func NewUserRepository(DB *gorm.DB) infrainterface.IUserRepository {
-	return  userRepository{
+	return userRepository{
 		DB: DB,
 	}
 }
@@ -26,7 +25,7 @@ func (repository userRepository) Activate(userId model.UserId, password model.Ha
 	user := table.User{
 		Activated: true,
 	}
-	conn := map[string]interface{} {
+	conn := map[string]interface{}{
 		"user_id": userId,
 	}
 	result := repository.DB.Where(conn).Save(&user)
@@ -39,8 +38,8 @@ func (repository userRepository) Activate(userId model.UserId, password model.Ha
 
 func (repository userRepository) userExists(userId model.UserId, password model.HashString) (bool, error) {
 	userPassword := table.UserPassword{}
-	conn := map[string]interface{} {
-		"user_id": userId,
+	conn := map[string]interface{}{
+		"user_id":  userId,
 		"password": password,
 	}
 	result := repository.DB.Where(conn).Find(&userPassword)

@@ -37,7 +37,7 @@ func TestCreateUserHandlerNoErrorCase(t *testing.T) {
 
 	e.ServeHTTP(rec, req)
 
-	if !assert.Equal(t, http.StatusCreated, rec.Code){
+	if !assert.Equal(t, http.StatusCreated, rec.Code) {
 		t.Error("error")
 	}
 

@@ -12,10 +12,8 @@ func InitHandler(repositories initializer.Repositories) Handlers {
 		UserRepository: createUserRepository,
 	}
 
-	handlers :=  Handlers{
+	handlers := Handlers{
 		CreateUserHandler: createUserHandler,
 	}
 	return handlers
 }
-
-

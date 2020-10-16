@@ -21,7 +21,7 @@ func InitServer(conf config.Config, db *gorm.DB) Handlers {
 	return handlers
 }
 
-func NewRouter(handlers Handlers) *echo.Echo{
+func NewRouter(handlers Handlers) *echo.Echo {
 	e := echo.New()
 
 	e.Validator = validator.NewValidator()
@@ -35,4 +35,3 @@ func NewRouter(handlers Handlers) *echo.Echo{
 
 	return e
 }
-

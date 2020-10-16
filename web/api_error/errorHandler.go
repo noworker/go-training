@@ -10,8 +10,8 @@ func InvalidRequestError(err error) *echo.HTTPError {
 }
 
 type ApiError struct {
-	StatusCode       int      `json:"status_code"`
-	Message          string   `json:"message"`
+	StatusCode int    `json:"status_code"`
+	Message    string `json:"message"`
 }
 
 func CustomHTTPErrorHandler(err error, c echo.Context) {
@@ -22,8 +22,8 @@ func CustomHTTPErrorHandler(err error, c echo.Context) {
 		message = ee.Message.(string)
 	}
 	body := ApiError{
-		StatusCode:       code,
-		Message:          message,
+		StatusCode: code,
+		Message:    message,
 	}
 	c.JSON(code, body)
 }
