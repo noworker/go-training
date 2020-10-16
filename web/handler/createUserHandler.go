@@ -4,7 +4,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"go_training/domain/infrainterface"
 	"go_training/domain/model"
-	"go_training/lib"
 	"go_training/web/api_error"
 	"net/http"
 )
@@ -14,9 +13,9 @@ type CreateUserHandler struct {
 }
 
 type User struct {
-	UserId       string `json:"user_id" form:"user_id" validate:"required"`
-	EmailAddress string `json:"email_address" form:"email_address" validate:"required,email_address"`
-	Password     string `json:"password" form:"password" validate:"required,password"`
+	UserId       string `json:"user_id"`
+	EmailAddress string `json:"email_address"`
+	Password     string `json:"password"`
 }
 
 func (handler CreateUserHandler) CreateUser(c echo.Context) error {
@@ -25,15 +24,11 @@ func (handler CreateUserHandler) CreateUser(c echo.Context) error {
 		return api_error.InvalidRequestError(err)
 	}
 
-	if err := c.Validate(user); err != nil {
+	newUser, err := model.NewUser(user.UserId, user.EmailAddress, user.Password)
+	if err != nil {
 		return api_error.InvalidRequestError(err)
 	}
-
-	if err := handler.UserRepository.CreateUnactivatedNewUser(
-		model.UserId(user.UserId),
-		model.EmailAddress(user.EmailAddress),
-		lib.MakeHashedStringFromPassword(user.Password),
-	); err != nil {
+	if err := handler.UserRepository.CreateUnactivatedNewUser(newUser); err != nil {
 		return api_error.InvalidRequestError(err)
 	}
 

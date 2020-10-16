@@ -8,7 +8,6 @@ import (
 	"go_training/config"
 	"go_training/initializer"
 	"go_training/web/api_error"
-	"go_training/web/validator"
 )
 
 const apiPrefix = "/api"
@@ -23,8 +22,6 @@ func InitServer(conf config.Config, db *gorm.DB) Handlers {
 
 func NewRouter(handlers Handlers) *echo.Echo {
 	e := echo.New()
-
-	e.Validator = validator.NewValidator()
 
 	e.HTTPErrorHandler = api_error.CustomHTTPErrorHandler
 

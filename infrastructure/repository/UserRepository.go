@@ -70,14 +70,14 @@ func (repository userRepository) userExists(userId model.UserId, password model.
 //	return user, nil
 //}
 
-func (repository userRepository) CreateUnactivatedNewUser(userId model.UserId, emailAddress model.EmailAddress, password model.HashString) error {
-	if exists, err := repository.userExists(userId, password); exists {
+func (repository userRepository) CreateUnactivatedNewUser(user model.User) error {
+	if exists, err := repository.userExists(user.UserId, user.Password); exists {
 		return err
 	}
-	if err := repository.createUser(userId, emailAddress); err != nil {
+	if err := repository.createUser(user.UserId, user.EmailAddress); err != nil {
 		return err
 	}
-	if err := repository.createUserPassword(userId, password); err != nil {
+	if err := repository.createUserPassword(user.UserId, user.Password); err != nil {
 		return err
 	}
 	return nil

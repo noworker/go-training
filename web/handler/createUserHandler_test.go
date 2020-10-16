@@ -7,7 +7,6 @@ import (
 	"go_training/domain/model"
 	"go_training/infrastructure/repository"
 	"go_training/initializer"
-	"go_training/lib"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -41,16 +40,23 @@ func TestCreateUserHandlerNoErrorCase(t *testing.T) {
 		t.Error("error")
 	}
 
-	if repo.UserId != model.UserId(userId) {
-		t.Error(fmt.Sprintf("\nresult: %s\nexpected: %s", repo.UserId, userId))
+	newUser, err := model.NewUser(userId, emailAddress, password)
+
+	if err != nil {
+		t.Error("error")
+		return
 	}
 
-	if repo.EmailAddress != model.EmailAddress(emailAddress) {
-		t.Error(fmt.Sprintf("\nresult: %s\nexpected: %s", repo.EmailAddress, emailAddress))
+	if repo.User.UserId != newUser.UserId {
+		t.Error(fmt.Sprintf("\nresult: %s\nexpected: %s", repo.User.UserId, newUser.UserId))
 	}
 
-	if repo.Password != lib.MakeHashedStringFromPassword(password) {
-		t.Error(fmt.Sprintf("\nresult: %s\nexpected: %s", repo.Password, password))
+	if repo.User.EmailAddress != newUser.EmailAddress {
+		t.Error(fmt.Sprintf("\nresult: %s\nexpected: %s", repo.User.EmailAddress, newUser.EmailAddress))
+	}
+
+	if repo.User.Password != newUser.Password {
+		t.Error(fmt.Sprintf("\nresult: %s\nexpected: %s", repo.User.Password, newUser.Password))
 	}
 }
 
