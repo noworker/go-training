@@ -30,7 +30,7 @@ func NewUser(userIdString, emailAddressString string, password lib.HashString) (
 
 	emailAddress, err := newEmailAddress(emailAddressString)
 	if err != nil {
-		return User{}, err
+		return User{}, errors.CustomError{Message: InvalidEmailAddressFormat}
 	}
 
 	return User{UserId: userId, EmailAddress: emailAddress, Password: password}, nil

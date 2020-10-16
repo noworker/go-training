@@ -70,23 +70,30 @@ func TestCreateUserHandlerErrorCase1(t *testing.T) {
 	repo := repository.NewUserRepositoryMock(existingUserId)
 	handlers := InitHandler(initializer.Repositories{UserRepository: repo})
 	e := NewRouter(handlers)
-	form1 := make(url.Values)
+	form := make(url.Values)
 
 	userId := "abcde"
 	emailAddress := "abc@example.com"
 
-	form1.Set("user_id", userId)
-	form1.Set("email_address", emailAddress)
-	form1.Set("password", "111")
+	form.Set("user_id", userId)
+	form.Set("email_address", emailAddress)
+	form.Set("password", "111")
 
-	req1 := httptest.NewRequest(http.MethodPost, "/api/users", strings.NewReader(form1.Encode()))
-	req1.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
-	rec1 := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodPost, "/api/users", strings.NewReader(form.Encode()))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
+	rec := httptest.NewRecorder()
 
-	e.ServeHTTP(rec1, req1)
+	e.ServeHTTP(rec, req)
 
-	if !assert.Equal(t, http.StatusBadRequest, rec1.Code) {
+	if !assert.Equal(t, http.StatusBadRequest, rec.Code) {
 		t.Error("error")
+	}
+
+	c := e.NewContext(req, rec)
+	err := handlers.CreateUserHandler.CreateUser(c)
+
+	if err.(*echo.HTTPError).Message.(string) != string(lib.PasswordIsTooShort) {
+		t.Error("\nresult", err.(*echo.HTTPError).Message, "\nexpect:", lib.PasswordIsTooShort)
 	}
 }
 
@@ -112,6 +119,13 @@ func TestCreateUserHandlerErrorCase2(t *testing.T) {
 	if !assert.Equal(t, http.StatusBadRequest, rec.Code) {
 		t.Error("error")
 	}
+
+	c := e.NewContext(req, rec)
+	err := handlers.CreateUserHandler.CreateUser(c)
+
+	if err.(*echo.HTTPError).Message.(string) != string(model.InvalidEmailAddressFormat) {
+		t.Error("\nresult", err.(*echo.HTTPError).Message, "\nexpect:", model.InvalidEmailAddressFormat)
+	}
 }
 
 func TestCreateUserHandlerErrorCase3(t *testing.T) {
@@ -123,7 +137,7 @@ func TestCreateUserHandlerErrorCase3(t *testing.T) {
 
 	form := make(url.Values)
 	form.Set("user_id", userId)
-	form.Set("email_address", "aaaexample.com")
+	form.Set("email_address", "aaa@example.com")
 
 	req := httptest.NewRequest(http.MethodPost, "/api/users", strings.NewReader(form.Encode()))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
@@ -133,6 +147,13 @@ func TestCreateUserHandlerErrorCase3(t *testing.T) {
 
 	if !assert.Equal(t, http.StatusBadRequest, rec.Code) {
 		t.Error("error")
+	}
+
+	c := e.NewContext(req, rec)
+	err := handlers.CreateUserHandler.CreateUser(c)
+
+	if err.(*echo.HTTPError).Message.(string) != string(lib.PasswordIsTooShort) {
+		t.Error("\nresult", err.(*echo.HTTPError).Message, "\nexpect:", lib.PasswordIsTooShort)
 	}
 }
 
@@ -157,5 +178,12 @@ func TestCreateUserHandlerErrorCase4(t *testing.T) {
 
 	if !assert.Equal(t, http.StatusBadRequest, rec.Code) {
 		t.Error("error")
+	}
+
+	c := e.NewContext(req, rec)
+	err := handlers.CreateUserHandler.CreateUser(c)
+
+	if err.(*echo.HTTPError).Message.(string) != string(repository.CanNotCreateExistingUserId) {
+		t.Error("\nresult", err.(*echo.HTTPError).Message, "\nexpect:", repository.CanNotCreateExistingUserId)
 	}
 }
