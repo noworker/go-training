@@ -14,9 +14,9 @@ type CreateUserHandler struct {
 }
 
 type User struct {
-	UserId  string `json:"user_id" form:"user_id" validate:"required, user_id"`
-	EmailAddress string `json:"email_address" form:"email_address" validate:"required, email_address"`
-	Password string `json:"password" form:"password" validate:"required, password"`
+	UserId  string `json:"user_id" form:"user_id" validate:"required"`
+	EmailAddress string `json:"email_address" form:"email_address" validate:"required,email_address"`
+	Password string `json:"password" form:"password" validate:"required,password"`
 }
 
 func(handler CreateUserHandler) CreateUser(c echo.Context) error {
@@ -36,6 +36,6 @@ func(handler CreateUserHandler) CreateUser(c echo.Context) error {
 		); err != nil {
 		return api_error.InvalidRequestError(err)
 	}
-	
+
 	return c.JSON(http.StatusOK, user)
 }

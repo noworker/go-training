@@ -9,6 +9,7 @@ import (
 	"go_training/initializer"
 	"go_training/web/api_error"
 	"go_training/web/handler"
+	"go_training/web/validator"
 )
 
 type Handlers struct {
@@ -27,6 +28,8 @@ func Init(conf config.Config, db *gorm.DB) Handlers {
 	}
 
 	e := echo.New()
+
+	e.Validator = validator.NewValidator()
 
 	e.HTTPErrorHandler = api_error.CustomHTTPErrorHandler
 
