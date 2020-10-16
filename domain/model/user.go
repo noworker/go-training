@@ -29,7 +29,7 @@ type User struct {
 	Activated bool
 }
 
-func NewUser(userIdString, passwordString, emailAddressString string) (User, error) {
+func NewUser(userIdString, emailAddressString, passwordString string) (User, error) {
 	userId, err := newUserId(userIdString)
 	if err != nil {
 		return User{}, err
@@ -55,13 +55,14 @@ func newUserId(userId string) (UserId, error) {
 
 func newEmailAddress(emailAddress string) (EmailAddress, error) {
 	if err := checkmail.ValidateFormat(emailAddress); err != nil {
+		println("emailError, ", emailAddress, err.Error())
 		return "", err
 	}
 	return EmailAddress(emailAddress), nil
 }
 
 func newPassword(password string) (HashString, error) {
-	if len(password) <= 8 {
+	if len(password) < 8 {
 		return "", errors.CustomError{Message: PasswordIsTooShort}
 	}
 	return MakeHashedStringFromPassword(password), nil
