@@ -7,10 +7,12 @@ import (
 )
 
 const (
-	InvalidEmailAddressFormat errors.ErrorMessage = "invalid email address format"
 	UserIdNotExists           errors.ErrorMessage = "user_id not exists"
-	EmailAddressNotExists     errors.ErrorMessage = "email_address not exists"
+	UserIdIsTooLong           errors.ErrorMessage = "user is is too long"
+	InvalidEmailAddressFormat errors.ErrorMessage = "invalid email address format"
 )
+
+const maxUserIdLen = 16
 
 type UserId string
 type EmailAddress string
@@ -38,7 +40,10 @@ func NewUser(userIdString, emailAddressString string, password lib.HashString) (
 
 func newUserId(userId string) (UserId, error) {
 	if userId == "" {
-		return UserId(0), errors.CustomError{Message: UserIdNotExists}
+		return "", errors.CustomError{Message: UserIdNotExists}
+	}
+	if len(userId) > maxUserIdLen {
+		return "", errors.CustomError{Message: UserIdIsTooLong}
 	}
 	return UserId(userId), nil
 }

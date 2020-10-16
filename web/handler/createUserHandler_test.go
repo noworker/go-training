@@ -187,3 +187,66 @@ func TestCreateUserHandlerErrorCase4(t *testing.T) {
 		t.Error("\nresult", err.(*echo.HTTPError).Message, "\nexpect:", repository.CanNotCreateExistingUserId)
 	}
 }
+
+func TestCreateUserHandlerErrorCase5(t *testing.T) {
+	repo := repository.NewUserRepositoryMock(existingUserId)
+	handlers := InitHandler(initializer.Repositories{UserRepository: repo})
+	e := NewRouter(handlers)
+	userId := "aaa"
+	emailAddress := "abc@example.com"
+	password := "12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
+
+	form := make(url.Values)
+	form.Set("user_id", userId)
+	form.Set("email_address", emailAddress)
+	form.Set("password", password)
+
+	req := httptest.NewRequest(http.MethodPost, "/api/users", strings.NewReader(form.Encode()))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
+	rec := httptest.NewRecorder()
+
+	e.ServeHTTP(rec, req)
+
+	if !assert.Equal(t, http.StatusBadRequest, rec.Code) {
+		t.Error("error")
+	}
+
+	c := e.NewContext(req, rec)
+	err := handlers.CreateUserHandler.CreateUser(c)
+
+	if err.(*echo.HTTPError).Message.(string) != string(lib.PasswordItTooLong) {
+		t.Error("\nresult", err.(*echo.HTTPError).Message, "\nexpect:", lib.PasswordItTooLong)
+	}
+}
+
+func TestCreateUserHandlerErrorCase6(t *testing.T) {
+	repo := repository.NewUserRepositoryMock(existingUserId)
+	handlers := InitHandler(initializer.Repositories{UserRepository: repo})
+	e := NewRouter(handlers)
+
+	userId := "12345678901234567"
+	emailAddress := "abc@example.com"
+	password := "12345678"
+
+	form := make(url.Values)
+	form.Set("user_id", userId)
+	form.Set("email_address", emailAddress)
+	form.Set("password", password)
+
+	req := httptest.NewRequest(http.MethodPost, "/api/users", strings.NewReader(form.Encode()))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
+	rec := httptest.NewRecorder()
+
+	e.ServeHTTP(rec, req)
+
+	if !assert.Equal(t, http.StatusBadRequest, rec.Code) {
+		t.Error("error")
+	}
+
+	c := e.NewContext(req, rec)
+	err := handlers.CreateUserHandler.CreateUser(c)
+
+	if err.(*echo.HTTPError).Message.(string) != string(model.UserIdIsTooLong) {
+		t.Error("\nresult", err.(*echo.HTTPError).Message, "\nexpect:", model.UserIdIsTooLong)
+	}
+}
