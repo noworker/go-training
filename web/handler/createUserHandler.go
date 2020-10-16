@@ -13,9 +13,9 @@ type CreateUserHandler struct {
 }
 
 type User struct {
-	UserId       string `json:"user_id"`
-	EmailAddress string `json:"email_address"`
-	Password     string `json:"password"`
+	UserId       string `json:"user_id" form:"user_id"`
+	EmailAddress string `json:"email_address" form:"email_address"`
+	Password     string `json:"password" form:"password"`
 }
 
 func (handler CreateUserHandler) CreateUser(c echo.Context) error {
@@ -28,6 +28,7 @@ func (handler CreateUserHandler) CreateUser(c echo.Context) error {
 	if err != nil {
 		return api_error.InvalidRequestError(err)
 	}
+
 	if err := handler.UserRepository.CreateUnactivatedNewUser(newUser); err != nil {
 		return api_error.InvalidRequestError(err)
 	}
