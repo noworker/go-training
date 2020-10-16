@@ -123,3 +123,27 @@ func TestCreateUserHandlerErrorCase3(t *testing.T) {
 		t.Error("error")
 	}
 }
+
+func TestCreateUserHandlerErrorCase4(t *testing.T) {
+	repo := repository.NewUserRepositoryMock(existingUserId)
+	handlers := InitHandler(initializer.Repositories{UserRepository: repo})
+	e := NewRouter(handlers)
+
+	emailAddress := "abc@example.com"
+	password := "12345678"
+
+	form := make(url.Values)
+	form.Set("user_id", existingUserId)
+	form.Set("email_address", emailAddress)
+	form.Set("password", password)
+
+	req := httptest.NewRequest(http.MethodPost, "/api/users", strings.NewReader(form.Encode()))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
+	rec := httptest.NewRecorder()
+
+	e.ServeHTTP(rec, req)
+
+	if !assert.Equal(t, http.StatusBadRequest, rec.Code) {
+		t.Error("error")
+	}
+}

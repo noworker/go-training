@@ -5,6 +5,7 @@ import (
 	"go_training/domain/infrainterface"
 	"go_training/domain/model"
 	"go_training/infrastructure/table"
+	"go_training/lib/errors"
 )
 
 type userRepository struct {
@@ -46,7 +47,7 @@ func (repository userRepository) checkIfUserExists(userId model.UserId, password
 	if err := result.Error; err != nil {
 		return err
 	}
-	return  nil
+	return nil
 }
 
 //func (repository userRepository) CheckIfActivated(userId model.UserId, password model.HashStringPassword) (bool, error) {
@@ -71,12 +72,13 @@ func (repository userRepository) checkIfUserExists(userId model.UserId, password
 //}
 
 func (repository userRepository) CreateUnactivatedNewUser(userId model.UserId, emailAddress model.EmailAddress, password model.HashString) error {
-	err := repository.createUser(userId, emailAddress)
-	if err != nil {
+	if err := repository.checkIfUserExists(userId, password); err != nil {
+		return errors.CustomError{Message: "can not create existing user id", ErrorType: errors.CanNotCreateExistingUserId}
+	}
+	if err := repository.createUser(userId, emailAddress); err != nil {
 		return err
 	}
-	err = repository.createUserPassword(userId, password)
-	if err != nil {
+	if err := repository.createUserPassword(userId, password); err != nil {
 		return err
 	}
 	return nil

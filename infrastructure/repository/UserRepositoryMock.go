@@ -2,6 +2,7 @@ package repository
 
 import (
 	"go_training/domain/model"
+	"go_training/lib/errors"
 )
 
 type UserRepositoryMock struct {
@@ -31,6 +32,9 @@ func (repository *UserRepositoryMock) Activate(userId model.UserId, password mod
 }
 
 func (repository *UserRepositoryMock) CreateUnactivatedNewUser(userId model.UserId, emailAddress model.EmailAddress, password model.HashString) error {
+	if userId == repository.ExistingUserId {
+		return errors.CustomError{Message: "can not create existing user id", ErrorType: errors.CanNotCreateExistingUserId}
+	}
 	repository.userValue = userValue{UserId: userId, EmailAddress: emailAddress, Password: password, Activated: false}
 	return nil
 }
