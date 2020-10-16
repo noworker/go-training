@@ -8,6 +8,7 @@ import (
 	"go_training/lib/errors"
 )
 
+
 type userRepository struct {
 	DB *gorm.DB
 }
@@ -46,7 +47,7 @@ func (repository userRepository) userExists(userId model.UserId, password model.
 	if result.RecordNotFound() {
 		return false, nil
 	}
-	return true, errors.CustomError{Message: "can not create existing user id", ErrorType: errors.CanNotCreateExistingUserId}
+	return true, errors.CustomError{Message: errors.CanNotCreateExistingUserId}
 }
 
 //func (repository userRepository) CheckIfActivated(userId model.UserId, password model.HashStringPassword) (bool, error) {

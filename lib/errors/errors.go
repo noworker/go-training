@@ -1,16 +1,14 @@
 package errors
 
 type CustomError struct {
-	Message string
-	ErrorType ErrorType
+	Message ErrorMessage
 }
 
-type ErrorType string
+type ErrorMessage string
 
 func (err CustomError) Error() string {
-	return err.Message
+	return string(err.Message)
 }
-
 const (
-	CanNotCreateExistingUserId ErrorType = "can_not_create_existing_user_id"
+	CanNotCreateExistingUserId ErrorMessage = "can_not_create_existing_user_id"
 )
