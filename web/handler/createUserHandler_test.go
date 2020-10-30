@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -61,7 +62,7 @@ func TestCreateUserHandlerNoErrorCase(t *testing.T) {
 		t.Error(fmt.Sprintf("\nresult: %s\nexpected: %s", repo.User.EmailAddress, newUser.EmailAddress))
 	}
 
-	if repo.User.Password != newUser.Password {
+	if reflect.DeepEqual(repo.User.Password, newUser.Password) {
 		t.Error(fmt.Sprintf("\nresult: %s\nexpected: %s", repo.User.Password, newUser.Password))
 	}
 }

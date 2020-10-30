@@ -1,5 +1,9 @@
 # go-training
 
+## migration
+sql-migrate up  
+sql-migrate down  
+
 # 設計案
 
 ## アカウント作成画面

@@ -23,7 +23,7 @@ func NewUserRepository(DB *gorm.DB) infrainterface.IUserRepository {
 	}
 }
 
-func (repository userRepository) Activate(userId model.UserId, password lib.HashString) error {
+func (repository userRepository) Activate(userId model.UserId, password lib.HashedByteString) error {
 	if exists, err := repository.userExists(userId, password); exists {
 		return err
 	}
@@ -41,7 +41,7 @@ func (repository userRepository) Activate(userId model.UserId, password lib.Hash
 	return nil
 }
 
-func (repository userRepository) userExists(userId model.UserId, password lib.HashString) (bool, error) {
+func (repository userRepository) userExists(userId model.UserId, password lib.HashedByteString) (bool, error) {
 	userPassword := table.UserPassword{}
 	conn := map[string]interface{}{
 		"user_id":  userId,
@@ -102,7 +102,7 @@ func (repository userRepository) createUser(userId model.UserId, emailAddress mo
 	return nil
 }
 
-func (repository userRepository) createUserPassword(userId model.UserId, password lib.HashString) error {
+func (repository userRepository) createUserPassword(userId model.UserId, password lib.HashedByteString) error {
 	user := table.UserPassword{UserId: table.UserId(userId), Password: table.Password(password)}
 	result := repository.DB.Create(&user)
 	if err := result.Error; err != nil {

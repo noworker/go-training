@@ -1,12 +1,11 @@
 package lib
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"go_training/lib/errors"
+	"golang.org/x/crypto/bcrypt"
 )
 
-type HashString string
+type HashedByteString []byte
 
 const (
 	PasswordIsTooShort errors.ErrorMessage = "password is too short"
@@ -15,14 +14,18 @@ const (
 
 const minPasswordLen = 8
 const maxPasswordLen = 255
+const bcryptCost = 11
 
-func MakeHashedStringFromPassword(s string) (HashString, error) {
+func MakeHashedStringFromPassword(s string) (HashedByteString, error) {
 	if len(s) < minPasswordLen {
-		return "", errors.CustomError{Message: PasswordIsTooShort}
+		return []byte{}, errors.CustomError{Message: PasswordIsTooShort}
 	}
 	if len(s) > maxPasswordLen {
-		return "", errors.CustomError{Message: PasswordItTooLong}
+		return []byte{}, errors.CustomError{Message: PasswordItTooLong}
 	}
-	r := sha256.Sum256([]byte(s))
-	return HashString(hex.EncodeToString(r[:])), nil
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(s), bcryptCost)
+	if err != nil {
+		return []byte{}, err
+	}
+	return hashedPassword, nil
 }
