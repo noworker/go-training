@@ -50,7 +50,6 @@ func newUserId(userId string) (UserId, error) {
 
 func newEmailAddress(emailAddress string) (EmailAddress, error) {
 	if err := checkmail.ValidateFormat(emailAddress); err != nil {
-		println("emailError, ", emailAddress, err.Error())
 		return "", err
 	}
 	return EmailAddress(emailAddress), nil
