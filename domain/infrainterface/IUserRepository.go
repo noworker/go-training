@@ -6,7 +6,7 @@ import (
 )
 
 type IUserRepository interface {
-	Activate(userId model.UserId, password lib.HashString) error
+	Activate(userId model.UserId, password lib.HashedByteString) error
 	//CheckIfActivated(userId model.UserId, password lib.HashStringPassword) (bool, error)
 	//GetUserByIdAndPassword(userId model.UserId, password lib.HashStringPassword) (table.User, error)
 	CreateUnactivatedNewUser(user model.User) error

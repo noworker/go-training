@@ -4,6 +4,7 @@ import (
 	"go_training/domain/model"
 	"go_training/lib"
 	"go_training/lib/errors"
+	"reflect"
 )
 
 type UserRepositoryMock struct {
@@ -17,8 +18,8 @@ func NewUserRepositoryMock(existingUserId string) *UserRepositoryMock {
 	}
 }
 
-func (repository *UserRepositoryMock) Activate(userId model.UserId, password lib.HashString) error {
-	if repository.User.UserId != userId || repository.User.Password != password {
+func (repository *UserRepositoryMock) Activate(userId model.UserId, password lib.HashedByteString) error {
+	if repository.User.UserId != userId || reflect.DeepEqual(repository.User.Password, password) {
 		panic("userId or password does not match")
 	}
 	repository.User.Activated = true

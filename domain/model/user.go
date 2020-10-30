@@ -20,11 +20,11 @@ type EmailAddress string
 type User struct {
 	UserId
 	EmailAddress
-	Password  lib.HashString
+	Password  lib.HashedByteString
 	Activated bool
 }
 
-func NewUser(userIdString, emailAddressString string, password lib.HashString) (User, error) {
+func NewUser(userIdString, emailAddressString string, password lib.HashedByteString) (User, error) {
 	userId, err := newUserId(userIdString)
 	if err != nil {
 		return User{}, err

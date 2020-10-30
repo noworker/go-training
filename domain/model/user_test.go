@@ -30,7 +30,7 @@ func TestNewUser(t *testing.T) {
 	if err != nil {
 		t.Error(err.Error())
 	}
-	_, err = NewUser("userId", "example@example.com", "12345678")
+	_, err = NewUser("userId", "example@example.com", []byte("12345678"))
 	if err != nil {
 		t.Error(err.Error())
 	}
