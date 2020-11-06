@@ -6,10 +6,9 @@ type Handlers struct {
 	CreateUserHandler CreateUserHandler
 }
 
-func InitHandler(repositories initializer.Repositories) Handlers {
-	createUserRepository := repositories.UserRepository
+func InitHandler(repositories initializer.Repositories, services initializer.Services) Handlers {
 	createUserHandler := CreateUserHandler{
-		UserRepository: createUserRepository,
+		createUserService: services.CreateUserService,
 	}
 
 	handlers := Handlers{

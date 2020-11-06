@@ -111,3 +111,15 @@ func (repository userRepository) createUserPassword(userId model.UserId, passwor
 	}
 	return nil
 }
+
+func (repository userRepository) createEmailActivation(userId model.UserId) error {
+	emailActivation := table.EmailActivation{
+		UserId: table.UserId(userId),
+	}
+	result := repository.DB.Create(&emailActivation)
+	if err := result.Error; err != nil {
+		panic(err.Error())
+		return err
+	}
+	return nil
+}

@@ -7,22 +7,23 @@ sql-migrate down
 # 設計案
 
 ## アカウント作成画面
-`/new_account POST`
+`/api/users POST`
 JSON
 ```
 {
   user_id: string,
-  password: string,
   email_address: string
+  password: string,
 }
 ```
 
 内部で一意なトークンを生成→ハッシュ化してメール認証専用のテーブルに保存
 expires_atはunix timeで数時間後に設定する
 ```
-table: email_activation
-  token: string
-  expires_at: int
+table: email_activations
+  token: string  primary key, not null
+  user_id: string not null
+  expires_at: int not null
 ```
 
 ユーザーIDとパスワードのハッシュ値を格納したテーブルへの保存もこの時点で行う。ただし、まだ未認証なのでactivated: falseとする
@@ -40,9 +41,9 @@ table: user
 
 ## メール認証
 
-`/new_account/validate?token=hoge GET`
+`/api/activate_users?token=hoge` `GET`
 
-`?token=hoge` のhogeをハッシュにかけてemail_activationで検索
+`?token=hoge` のhogeをハッシュにかけてemail_activationsで検索
 →ある、かつexpires_atの期限内ならばアカウントを作成し、ログイン画面にリダイレクト→DBからそのレコードを消す
 →あるが期限切れなら再認証画面へリダイレクトさせる→DBからそのレコードを消す
 →DBになければ404 Not Found
