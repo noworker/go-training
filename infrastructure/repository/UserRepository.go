@@ -7,11 +7,14 @@ import (
 	"go_training/infrastructure/table"
 	"go_training/lib"
 	"go_training/lib/errors"
+	"time"
 )
 
 const (
 	CanNotCreateExistingUserId errors.ErrorMessage = "can_not_create_existing_user_id"
 )
+
+const activationTokenLifeTime = time.Hour
 
 type userRepository struct {
 	DB *gorm.DB
@@ -24,7 +27,7 @@ func NewUserRepository(DB *gorm.DB) infrainterface.IUserRepository {
 }
 
 func (repository userRepository) Activate(userId model.UserId, password lib.HashedByteString) error {
-	if exists, err := repository.userExists(userId, password); exists {
+	if exists, err := repository.userExists(userId, password); !exists {
 		return err
 	}
 	user := table.User{
@@ -34,6 +37,20 @@ func (repository userRepository) Activate(userId model.UserId, password lib.Hash
 		"user_id": userId,
 	}
 	result := repository.DB.Where(conn).Save(&user)
+	if err := result.Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repository userRepository) createEmailActivationToken(userId model.UserId, token lib.Token) error {
+	EmailActivation := table.EmailActivationToken{
+		ActivationToken: table.ActivationToken(token),
+		UserId:          table.UserId(userId),
+		ExpiresAt:       time.Now().Add(activationTokenLifeTime).Unix(),
+	}
+	result := repository.DB.Create(&EmailActivation)
 	if err := result.Error; err != nil {
 		return err
 	}
@@ -75,7 +92,7 @@ func (repository userRepository) userExists(userId model.UserId, password lib.Ha
 //	return user, nil
 //}
 
-func (repository userRepository) CreateUnactivatedNewUser(user model.User) error {
+func (repository userRepository) CreateUnactivatedNewUser(user model.User, token lib.Token) error {
 	if exists, err := repository.userExists(user.UserId, user.Password); exists {
 		return err
 	}
@@ -83,6 +100,9 @@ func (repository userRepository) CreateUnactivatedNewUser(user model.User) error
 		return err
 	}
 	if err := repository.createUserPassword(user.UserId, user.Password); err != nil {
+		return err
+	}
+	if err := repository.createEmailActivationToken(user.UserId, token); err != nil {
 		return err
 	}
 	return nil
