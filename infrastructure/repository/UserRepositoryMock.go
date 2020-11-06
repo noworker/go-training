@@ -10,6 +10,7 @@ import (
 type UserRepositoryMock struct {
 	ExistingUserId model.UserId
 	User           model.User
+	UserPassword   model.UserPassword
 }
 
 func NewUserRepositoryMock(existingUserId string) *UserRepositoryMock {
@@ -19,17 +20,18 @@ func NewUserRepositoryMock(existingUserId string) *UserRepositoryMock {
 }
 
 func (repository *UserRepositoryMock) Activate(userId model.UserId, password lib.HashedByteString) error {
-	if repository.User.UserId != userId || reflect.DeepEqual(repository.User.Password, password) {
+	if repository.User.UserId != userId || reflect.DeepEqual(repository.UserPassword.Password, password) {
 		panic("userId or password does not match")
 	}
 	repository.User.Activated = true
 	return nil
 }
 
-func (repository *UserRepositoryMock) CreateUnactivatedNewUser(user model.User, token lib.Token) error {
+func (repository *UserRepositoryMock) CreateUnactivatedNewUser(user model.User, userPassword model.UserPassword, token lib.Token) error {
 	if user.UserId == repository.ExistingUserId {
 		return errors.CustomError{Message: CanNotCreateExistingUserId}
 	}
 	repository.User = user
+	repository.UserPassword = userPassword
 	return nil
 }
