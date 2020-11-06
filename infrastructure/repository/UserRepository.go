@@ -24,7 +24,7 @@ func NewUserRepository(DB *gorm.DB) infrainterface.IUserRepository {
 }
 
 func (repository userRepository) Activate(userId model.UserId, password lib.HashedByteString) error {
-	if exists, err := repository.userExists(userId, password); exists {
+	if exists, err := repository.userExists(userId, password); !exists {
 		return err
 	}
 	user := table.User{
@@ -34,6 +34,20 @@ func (repository userRepository) Activate(userId model.UserId, password lib.Hash
 		"user_id": userId,
 	}
 	result := repository.DB.Where(conn).Save(&user)
+	if err := result.Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repository userRepository) createEmailActivationToken(userId model.UserId) error {
+	EmailActivation := table.EmailActivationToken{
+		ActivationToken: "hoge",
+		UserId:          table.UserId(userId),
+		ExpiresAt:       0,
+	}
+	result := repository.DB.Create(&EmailActivation)
 	if err := result.Error; err != nil {
 		return err
 	}
@@ -85,6 +99,9 @@ func (repository userRepository) CreateUnactivatedNewUser(user model.User) error
 	if err := repository.createUserPassword(user.UserId, user.Password); err != nil {
 		return err
 	}
+	if err := repository.createEmailActivationToken(user.UserId); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -105,18 +122,6 @@ func (repository userRepository) createUser(userId model.UserId, emailAddress mo
 func (repository userRepository) createUserPassword(userId model.UserId, password lib.HashedByteString) error {
 	user := table.UserPassword{UserId: table.UserId(userId), Password: table.Password(password)}
 	result := repository.DB.Create(&user)
-	if err := result.Error; err != nil {
-		panic(err.Error())
-		return err
-	}
-	return nil
-}
-
-func (repository userRepository) createEmailActivation(userId model.UserId) error {
-	emailActivation := table.EmailActivation{
-		UserId: table.UserId(userId),
-	}
-	result := repository.DB.Create(&emailActivation)
 	if err := result.Error; err != nil {
 		panic(err.Error())
 		return err

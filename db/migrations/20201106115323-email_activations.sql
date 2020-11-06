@@ -1,5 +1,5 @@
 -- +migrate Up
-CREATE TABLE IF NOT EXISTS `email_activations` (
+CREATE TABLE IF NOT EXISTS `email_activation_tokens` (
   `activation_token` VARCHAR(255) NOT NULL PRIMARY KEY,
   `user_id` VARCHAR(255) NOT NULL,
   `expires_at` INT NOT NULL,
@@ -7,4 +7,4 @@ CREATE TABLE IF NOT EXISTS `email_activations` (
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 -- +migrate Down
-DROP TABLE IF EXISTS `email_activations`;
+DROP TABLE IF EXISTS `email_activation_tokens`;
