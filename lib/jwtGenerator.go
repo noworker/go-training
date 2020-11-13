@@ -1,16 +1,14 @@
 package lib
 
 import (
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	mdate "github.com/matsuri-tech/date-go"
-	"go_training/domain/model"
 	"io/ioutil"
 )
 
-type JWT string
+type JWTStr string
 
-func JWTGenerator(userId model.UserId) (JWT, error) {
+func JWTGenerator(userId string) (JWTStr, error) {
 	signBytes, err := ioutil.ReadFile("./jwt_key.rsa")
 	if err != nil {
 		return "", err
@@ -32,5 +30,5 @@ func JWTGenerator(userId model.UserId) (JWT, error) {
 		return "", err
 	}
 
-	return JWT(tokenString), nil
+	return JWTStr(tokenString), nil
 }
