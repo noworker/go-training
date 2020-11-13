@@ -44,20 +44,6 @@ func (repository userRepository) Activate(userId model.UserId, password lib.Hash
 	return nil
 }
 
-func (repository userRepository) createEmailActivationToken(userId model.UserId, token lib.Token) error {
-	EmailActivation := table.EmailActivationToken{
-		ActivationToken: table.ActivationToken(token),
-		UserId:          table.UserId(userId),
-		ExpiresAt:       time.Now().Add(activationTokenLifeTime).Unix(),
-	}
-	result := repository.DB.Create(&EmailActivation)
-	if err := result.Error; err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (repository userRepository) userExists(userId model.UserId, password lib.HashedByteString) (bool, error) {
 	userPassword := table.UserPassword{}
 	conn := map[string]interface{}{
@@ -92,7 +78,7 @@ func (repository userRepository) userExists(userId model.UserId, password lib.Ha
 //	return user, nil
 //}
 
-func (repository userRepository) CreateNewUser(user model.User, token lib.Token) error {
+func (repository userRepository) CreateNewUser(user model.User) error {
 	if exists, err := repository.userExists(user.UserId, user.Password); exists {
 		return err
 	}
@@ -100,9 +86,6 @@ func (repository userRepository) CreateNewUser(user model.User, token lib.Token)
 		return err
 	}
 	if err := repository.createUserPassword(user.UserId, user.Password); err != nil {
-		return err
-	}
-	if err := repository.createEmailActivationToken(user.UserId, token); err != nil {
 		return err
 	}
 	return nil
