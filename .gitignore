@@ -20,4 +20,4 @@ dbconfig.yml
 
 curlmemo.txt
 
-jwt_key.*
+jwtRS256.key*
