@@ -125,7 +125,6 @@ func (repository userRepository) createUserPassword(userId model.UserId, passwor
 	user := table.UserPassword{UserId: table.UserId(userId), Password: table.Password(password)}
 	result := repository.DB.Create(&user)
 	if err := result.Error; err != nil {
-		panic(err.Error())
 		return err
 	}
 	return nil
