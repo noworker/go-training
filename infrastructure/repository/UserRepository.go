@@ -116,7 +116,6 @@ func (repository userRepository) createUser(userId model.UserId, emailAddress mo
 	}
 	result := repository.DB.Create(&user)
 	if err := result.Error; err != nil {
-		panic(err.Error())
 		return err
 	}
 	return nil
