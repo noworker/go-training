@@ -29,7 +29,7 @@ func (service CreateUserService) CreateUser(userId string, address string, rawPa
 
 	token := lib.MakeUniqueToken()
 
-	if err := service.UserRepository.CreateUnactivatedNewUser(newUser, token); err != nil {
+	if err := service.UserRepository.CreateNewUser(newUser, token); err != nil {
 		return err
 	}
 	return nil

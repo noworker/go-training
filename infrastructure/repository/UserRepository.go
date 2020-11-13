@@ -92,7 +92,7 @@ func (repository userRepository) userExists(userId model.UserId, password lib.Ha
 //	return user, nil
 //}
 
-func (repository userRepository) CreateUnactivatedNewUser(user model.User, token lib.Token) error {
+func (repository userRepository) CreateNewUser(user model.User, token lib.Token) error {
 	if exists, err := repository.userExists(user.UserId, user.Password); exists {
 		return err
 	}
