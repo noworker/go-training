@@ -17,17 +17,19 @@ func NewCreateUserService(userRepository infrainterface.IUserRepository) CreateU
 }
 
 func (service CreateUserService) CreateUser(userId string, address string, rawPassword string) error {
+	newUser, err := model.NewUser(userId, address)
+	if err != nil {
+		return err
+	}
+
 	password, err := lib.MakeHashedStringFromPassword(rawPassword)
 	if err != nil {
 		return err
 	}
 
-	newUser, err := model.NewUser(userId, address, password)
-	if err != nil {
-		return err
-	}
+	newUserPassword := model.NewUserPassword(newUser.UserId, password)
 
-	if err := service.UserRepository.CreateNewUser(newUser); err != nil {
+	if err := service.UserRepository.CreateUnactivatedNewUser(newUser, newUserPassword); err != nil {
 		return err
 	}
 	return nil

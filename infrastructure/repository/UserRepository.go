@@ -72,14 +72,14 @@ func (repository userRepository) userExists(userId model.UserId, password lib.Ha
 //	return user, nil
 //}
 
-func (repository userRepository) CreateNewUser(user model.User) error {
-	if exists, err := repository.userExists(user.UserId, user.Password); exists {
+func (repository userRepository) CreateUnactivatedNewUser(user model.User, userPassword model.UserPassword) error {
+	if exists, err := repository.userExists(userPassword.UserId, userPassword.Password); exists {
 		return err
 	}
 	if err := repository.createUser(user.UserId, user.EmailAddress); err != nil {
 		return err
 	}
-	if err := repository.createUserPassword(user.UserId, user.Password); err != nil {
+	if err := repository.createUserPassword(userPassword.UserId, userPassword.Password); err != nil {
 		return err
 	}
 	return nil

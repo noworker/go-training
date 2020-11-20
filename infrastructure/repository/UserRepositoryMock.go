@@ -8,6 +8,7 @@ import (
 type UserRepositoryMock struct {
 	ExistingUserId model.UserId
 	User           model.User
+	UserPassword   model.UserPassword
 }
 
 func NewUserRepositoryMock(existingUserId string) *UserRepositoryMock {
@@ -24,10 +25,11 @@ func (repository *UserRepositoryMock) Activate(userId model.UserId) error {
 	return nil
 }
 
-func (repository *UserRepositoryMock) CreateNewUser(user model.User) error {
+func (repository *UserRepositoryMock) CreateUnactivatedNewUser(user model.User, userPassword model.UserPassword) error {
 	if user.UserId == repository.ExistingUserId {
 		return errors.CustomError{Message: CanNotCreateExistingUserId}
 	}
 	repository.User = user
+	repository.UserPassword = userPassword
 	return nil
 }

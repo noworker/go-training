@@ -20,11 +20,15 @@ type EmailAddress string
 type User struct {
 	UserId
 	EmailAddress
-	Password  lib.HashedByteString
 	Activated bool
 }
 
-func NewUser(userIdString, emailAddressString string, password lib.HashedByteString) (User, error) {
+type UserPassword struct {
+	UserId
+	Password lib.HashedByteString
+}
+
+func NewUser(userIdString, emailAddressString string) (User, error) {
 	userId, err := newUserId(userIdString)
 	if err != nil {
 		return User{}, err
@@ -35,7 +39,11 @@ func NewUser(userIdString, emailAddressString string, password lib.HashedByteStr
 		return User{}, errors.CustomError{Message: InvalidEmailAddressFormat}
 	}
 
-	return User{UserId: userId, EmailAddress: emailAddress, Password: password}, nil
+	return User{UserId: userId, EmailAddress: emailAddress}, nil
+}
+
+func NewUserPassword(userId UserId, password lib.HashedByteString) UserPassword {
+	return UserPassword{UserId: userId, Password: password}
 }
 
 func newUserId(userId string) (UserId, error) {
