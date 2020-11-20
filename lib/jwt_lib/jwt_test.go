@@ -13,8 +13,11 @@ func TestJWT(t *testing.T) {
 		t.Error(err.Error())
 	}
 
-	_, err = Checker(token, conf)
+	userId, err := Checker(token, conf)
 	if err != nil {
 		t.Error(err.Error())
+	}
+	if userId != "user_id" {
+		t.Error("erorr")
 	}
 }

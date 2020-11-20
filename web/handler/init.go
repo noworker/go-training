@@ -3,7 +3,8 @@ package handler
 import "go_training/initializer"
 
 type Handlers struct {
-	CreateUserHandler CreateUserHandler
+	CreateUserHandler   CreateUserHandler
+	ActivateUserHandler ActivateUserHandler
 }
 
 func InitHandler(repositories initializer.Repositories, services initializer.Services) Handlers {
@@ -11,8 +12,11 @@ func InitHandler(repositories initializer.Repositories, services initializer.Ser
 		createUserService: services.CreateUserService,
 	}
 
+	activateUserHandler := ActivateUserHandler{createUserRepository: repositories.UserRepository}
+
 	handlers := Handlers{
-		CreateUserHandler: createUserHandler,
+		CreateUserHandler:   createUserHandler,
+		ActivateUserHandler: activateUserHandler,
 	}
 	return handlers
 }

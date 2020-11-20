@@ -15,15 +15,15 @@ const (
 	CanNotHandle            errors.ErrorMessage = "can not handle this token"
 )
 
-func Checker(jwtStr string, conf config.Config) (bool, error) {
+func Checker(jwtStr string, conf config.Config) (string, error) {
 	verifyBytes, err := ioutil.ReadFile(conf.App.KeyPath + "public.pem")
 	if err != nil {
-		return false, err
+		return "", err
 	}
 
 	signKey, err := jwt.ParseRSAPublicKeyFromPEM(verifyBytes)
 	if err != nil {
-		return false, err
+		return "", err
 	}
 
 	token, err := jwt.Parse(jwtStr, func(token *jwt.Token) (interface{}, error) {
@@ -34,22 +34,32 @@ func Checker(jwtStr string, conf config.Config) (bool, error) {
 		}
 	})
 	if err != nil {
-		return false, err
+		return "", err
 	}
 
 	if token.Valid {
-		return true, nil
+		println("token is valid!")
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok {
+			panic("error")
+		}
+		userId, ok := claims["user_id"].(string)
+		if !ok {
+			panic("error")
+		}
+		println("user_id: ", userId)
+		return userId, nil
 	} else if ve, ok := err.(*jwt.ValidationError); ok {
 		if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-			return false, errors.CustomError{Message: NotEvenAToken}
+			return "", errors.CustomError{Message: NotEvenAToken}
 		} else if ve.Errors&(jwt.ValidationErrorExpired) != 0 {
-			return false, errors.CustomError{Message: Expired}
+			return "", errors.CustomError{Message: Expired}
 		} else if ve.Errors&(jwt.ValidationErrorNotValidYet) != 0 {
-			return false, errors.CustomError{Message: NotValidYet}
+			return "", errors.CustomError{Message: NotValidYet}
 		} else {
-			return false, errors.CustomError{Message: CanNotHandle}
+			return "", errors.CustomError{Message: CanNotHandle}
 		}
 	} else {
-		return false, errors.CustomError{Message: CanNotHandle}
+		return "", errors.CustomError{Message: CanNotHandle}
 	}
 }

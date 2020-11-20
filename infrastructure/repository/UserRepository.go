@@ -26,17 +26,11 @@ func NewUserRepository(DB *gorm.DB) infrainterface.IUserRepository {
 	}
 }
 
-func (repository userRepository) Activate(userId model.UserId, password lib.HashedByteString) error {
-	if exists, err := repository.userExists(userId, password); !exists {
-		return err
-	}
-	user := table.User{
-		Activated: true,
-	}
+func (repository userRepository) Activate(userId model.UserId) error {
 	conn := map[string]interface{}{
 		"user_id": userId,
 	}
-	result := repository.DB.Where(conn).Save(&user)
+	result := repository.DB.Model(&table.User{}).Where(conn).Update("activated", true)
 	if err := result.Error; err != nil {
 		return err
 	}
