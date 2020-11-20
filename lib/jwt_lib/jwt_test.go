@@ -10,11 +10,9 @@ func TestJWT(t *testing.T) {
 	if err != nil {
 		t.Error(err.Error())
 	}
-	println("\ntoken is: ", token)
 
-	result, err := Checker(token)
+	_, err = Checker(token)
 	if err != nil {
 		t.Error(err.Error())
 	}
-	println("\nresult is: ", result)
 }
