@@ -13,6 +13,7 @@ type Handlers struct {
 func InitHandler(repositories initializer.Repositories, services initializer.Services, conf config.Config) Handlers {
 
 	createUserHandler := CreateUserHandler{
+		conf:              conf,
 		createUserService: services.CreateUserService,
 	}
 
