@@ -18,7 +18,7 @@ func KeyGenerator(conf config.Config) {
 	bitSize := 2048
 
 	key, err := rsa.GenerateKey(reader, bitSize)
-	checkError(err)
+	mustKeyGen(err)
 
 	publicKey := key.PublicKey
 	keyPath := conf.App.KeyPath
@@ -31,17 +31,17 @@ func KeyGenerator(conf config.Config) {
 
 func saveGobKey(fileName string, key interface{}) {
 	outFile, err := os.Create(fileName)
-	checkError(err)
+	mustKeyGen(err)
 	defer outFile.Close()
 
 	encoder := gob.NewEncoder(outFile)
 	err = encoder.Encode(key)
-	checkError(err)
+	mustKeyGen(err)
 }
 
 func savePEMKey(fileName string, key *rsa.PrivateKey) {
 	outFile, err := os.Create(fileName)
-	checkError(err)
+	mustKeyGen(err)
 	defer outFile.Close()
 
 	var privateKey = &pem.Block{
@@ -50,12 +50,12 @@ func savePEMKey(fileName string, key *rsa.PrivateKey) {
 	}
 
 	err = pem.Encode(outFile, privateKey)
-	checkError(err)
+	mustKeyGen(err)
 }
 
-func savePublicPEMKey(fileName string, pubkey rsa.PublicKey) {
-	asn1Bytes, err := x509.MarshalPKIXPublicKey(&pubkey)
-	checkError(err)
+func savePublicPEMKey(fileName string, pubKey rsa.PublicKey) {
+	asn1Bytes, err := x509.MarshalPKIXPublicKey(&pubKey)
+	mustKeyGen(err)
 
 	var pemKey = &pem.Block{
 		Type:  "PUBLIC KEY",
@@ -63,16 +63,15 @@ func savePublicPEMKey(fileName string, pubkey rsa.PublicKey) {
 	}
 
 	pemFile, err := os.Create(fileName)
-	checkError(err)
+	mustKeyGen(err)
 	defer pemFile.Close()
 
 	err = pem.Encode(pemFile, pemKey)
-	checkError(err)
+	mustKeyGen(err)
 }
 
-func checkError(err error) {
+func mustKeyGen(err error) {
 	if err != nil {
-		fmt.Println("Fatal error ", err.Error())
-		os.Exit(1)
+		panic(fmt.Sprintf("key generate error: %s", err.Error()))
 	}
 }
