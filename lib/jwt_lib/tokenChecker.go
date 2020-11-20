@@ -13,6 +13,7 @@ const (
 	Expired                 errors.ErrorMessage = "token is expired"
 	NotValidYet             errors.ErrorMessage = "token is not valid yet"
 	CanNotHandle            errors.ErrorMessage = "can not handle this token"
+	InvalidTokenFormat      errors.ErrorMessage = "invalid token format"
 )
 
 func Checker(jwtStr string, conf config.Config) (string, error) {
@@ -38,16 +39,14 @@ func Checker(jwtStr string, conf config.Config) (string, error) {
 	}
 
 	if token.Valid {
-		println("token is valid!")
 		claims, ok := token.Claims.(jwt.MapClaims)
 		if !ok {
-			panic("error")
+			return "", errors.CustomError{Message: InvalidTokenFormat}
 		}
 		userId, ok := claims["user_id"].(string)
 		if !ok {
-			panic("error")
+			return "", errors.CustomError{Message: InvalidTokenFormat}
 		}
-		println("user_id: ", userId)
 		return userId, nil
 	} else if ve, ok := err.(*jwt.ValidationError); ok {
 		if ve.Errors&jwt.ValidationErrorMalformed != 0 {
