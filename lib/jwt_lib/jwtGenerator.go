@@ -6,10 +6,10 @@ import (
 	"io/ioutil"
 )
 
-const thisDir = "/home/ryo/matsuri/go-training/"
+const ThisDir = "/home/ryo/matsuri/go-training/"
 
 func Generator(userId string) (string, error) {
-	signBytes, err := ioutil.ReadFile(thisDir + "private.pem")
+	signBytes, err := ioutil.ReadFile(ThisDir + "private.pem")
 	if err != nil {
 		return "", err
 	}

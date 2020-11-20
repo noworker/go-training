@@ -15,13 +15,13 @@ const (
 )
 
 func Checker(jwtStr string) (bool, error) {
-	verifyBytes, err := ioutil.ReadFile(thisDir + "public.pem")
+	verifyBytes, err := ioutil.ReadFile(ThisDir + "public.pem")
 	if err != nil {
 		println("hoge1")
 		return false, err
 	}
 
-	signKey, err := jwt.ParseRSAPrivateKeyFromPEM(verifyBytes)
+	signKey, err := jwt.ParseRSAPublicKeyFromPEM(verifyBytes)
 	if err != nil {
 		panic(err)
 	}
