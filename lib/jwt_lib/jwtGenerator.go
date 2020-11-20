@@ -9,7 +9,7 @@ import (
 const ThisDir = "/home/ryo/matsuri/go-training/"
 
 func Generator(userId string) (string, error) {
-	signBytes, err := ioutil.ReadFile(ThisDir + "private.pem.pkcs1")
+	signBytes, err := ioutil.ReadFile(ThisDir + "private.pem")
 	if err != nil {
 		return "", err
 	}
