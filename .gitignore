@@ -21,3 +21,6 @@ dbconfig.yml
 curlmemo.txt
 
 jwtRS256.key*
+
+private.*
+public.*

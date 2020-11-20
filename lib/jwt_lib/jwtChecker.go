@@ -17,25 +17,22 @@ const (
 func Checker(jwtStr string) (bool, error) {
 	verifyBytes, err := ioutil.ReadFile(ThisDir + "public.pem")
 	if err != nil {
-		println("hoge1")
 		return false, err
 	}
 
 	signKey, err := jwt.ParseRSAPublicKeyFromPEM(verifyBytes)
 	if err != nil {
-		panic(err)
+		return false, err
 	}
 
 	token, err := jwt.Parse(jwtStr, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
-			println("hoge3")
 			return nil, errors.CustomError{Message: UnexpectedSigningMethod}
 		} else {
 			return signKey, nil
 		}
 	})
 	if err != nil {
-		println("hoge4")
 		return false, err
 	}
 
@@ -43,10 +40,8 @@ func Checker(jwtStr string) (bool, error) {
 		return true, nil
 	} else if ve, ok := err.(*jwt.ValidationError); ok {
 		if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-			println("hoge5")
 			return false, errors.CustomError{Message: NotEvenAToken}
 		} else if ve.Errors&(jwt.ValidationErrorExpired) != 0 {
-			println("hoge6")
 			return false, errors.CustomError{Message: Expired}
 		} else if ve.Errors&(jwt.ValidationErrorNotValidYet) != 0 {
 			return false, errors.CustomError{Message: NotValidYet}
@@ -54,7 +49,6 @@ func Checker(jwtStr string) (bool, error) {
 			return false, errors.CustomError{Message: CanNotHandle}
 		}
 	} else {
-		println("hoge7")
 		return false, errors.CustomError{Message: CanNotHandle}
 	}
 }

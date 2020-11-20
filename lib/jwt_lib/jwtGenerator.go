@@ -25,7 +25,6 @@ func Generator(userId string) (string, error) {
 
 	tokenString, err := token.SignedString(signKey)
 	if err != nil {
-		println("hoge3")
 		return "", err
 	}
 

@@ -10,6 +10,8 @@ import (
 	"os"
 )
 
+// 参考
+// https://gist.github.com/sdorra/1c95de8cb80da31610d2ad767cd6f251
 func KeyGenerator() {
 	reader := rand.Reader
 	bitSize := 2048
