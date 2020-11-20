@@ -5,6 +5,8 @@ import (
 	"go_training/config"
 	"go_training/lib/errors"
 	"io/ioutil"
+	"strconv"
+	"time"
 )
 
 const (
@@ -16,7 +18,16 @@ const (
 	InvalidTokenFormat      errors.ErrorMessage = "invalid token format"
 	ParseTokenError         errors.ErrorMessage = "parse token error"
 	ParsePublicKeyError     errors.ErrorMessage = "parse public key error"
+	TokenIsExpired          errors.ErrorMessage = "token is expired"
 )
+
+func isExpired(exp int) bool {
+	now := time.Now().Unix()
+	if exp < int(now) {
+		return false
+	}
+	return true
+}
 
 func Checker(jwtStr string, conf config.Config) (string, error) {
 	verifyBytes, err := ioutil.ReadFile(conf.App.KeyPath + "public.pem")
@@ -48,6 +59,17 @@ func Checker(jwtStr string, conf config.Config) (string, error) {
 		userId, ok := claims["user_id"].(string)
 		if !ok {
 			return "", errors.CustomError{Message: InvalidTokenFormat}
+		}
+		expiredAt, ok := claims["exp"].(string)
+		if !ok {
+			return "", errors.CustomError{Message: InvalidTokenFormat}
+		}
+		exp, err := strconv.Atoi(expiredAt)
+		if err != nil {
+			return "", errors.CustomError{Message: InvalidTokenFormat, Option: err.Error()}
+		}
+		if isExpired(exp) {
+			return "", errors.CustomError{Message: TokenIsExpired}
 		}
 		return userId, nil
 	} else if ve, ok := err.(*jwt.ValidationError); ok {
