@@ -6,18 +6,17 @@ import (
 )
 
 func TestJWT(t *testing.T) {
-	conf := config.NewConfig()
+	conf := config.NewDummyConfig()
 	KeyGenerator(conf)
-	token, err := Generator("user_id", conf)
+	token, err := TokenGenerator("user_id", conf)
 	if err != nil {
 		t.Error(err.Error())
 	}
-
-	userId, err := Checker(token, conf)
+	userId, err := TokenChecker(token, conf)
 	if err != nil {
 		t.Error(err.Error())
 	}
 	if userId != "user_id" {
-		t.Error("erorr")
+		t.Error("error")
 	}
 }

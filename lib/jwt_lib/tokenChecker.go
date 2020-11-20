@@ -24,12 +24,12 @@ const (
 func isExpired(exp int) bool {
 	now := time.Now().Unix()
 	if exp < int(now) {
-		return false
+		return true
 	}
-	return true
+	return false
 }
 
-func Checker(jwtStr string, conf config.Config) (string, error) {
+func TokenChecker(jwtStr string, conf config.Config) (string, error) {
 	verifyBytes, err := ioutil.ReadFile(conf.App.KeyPath + "public.pem")
 	if err != nil {
 		return "", errors.CustomError{Message: NoFileError, Option: err.Error()}
@@ -62,7 +62,7 @@ func Checker(jwtStr string, conf config.Config) (string, error) {
 		}
 		expiredAt, ok := claims["exp"].(string)
 		if !ok {
-			return "", errors.CustomError{Message: InvalidTokenFormat}
+			return "", errors.CustomError{Message: InvalidTokenFormat, Option: "failed to get exp"}
 		}
 		exp, err := strconv.Atoi(expiredAt)
 		if err != nil {

@@ -29,9 +29,9 @@ func (handler CreateUserHandler) CreateUser(c echo.Context) error {
 	if err := handler.createUserService.CreateUser(user.UserId, user.EmailAddress, user.Password); err != nil {
 		return api_error.InvalidRequestError(err)
 	}
-	token, err := jwt_lib.Generator(user.UserId, handler.conf)
+	token, err := jwt_lib.TokenGenerator(user.UserId, handler.conf)
 	if err != nil {
 		return api_error.InvalidRequestError(err)
 	}
-	return c.String(http.StatusCreated, fmt.Sprintf("User is successfully created.\ntoken: %s", token))
+	return c.String(http.StatusCreated, fmt.Sprintf("User is successfully created. \ntoken: %s", token))
 }

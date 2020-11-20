@@ -6,6 +6,7 @@ import (
 	"go_training/config"
 	"go_training/lib/errors"
 	"io/ioutil"
+	"strconv"
 )
 
 const (
@@ -14,7 +15,7 @@ const (
 	EncodeTokenError     errors.ErrorMessage = "encode token error"
 )
 
-func Generator(userId string, conf config.Config) (string, error) {
+func TokenGenerator(userId string, conf config.Config) (string, error) {
 	signBytes, err := ioutil.ReadFile(conf.App.KeyPath + "private.pem")
 	if err != nil {
 		return "", errors.CustomError{Message: NoFileError, Option: err.Error()}
@@ -26,7 +27,7 @@ func Generator(userId string, conf config.Config) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
 		"user_id": userId,
-		"exp":     mdate.GetToday().PlusNDay(1).Unix(),
+		"exp":     strconv.Itoa(int(mdate.GetToday().PlusNDay(1).Unix())),
 	})
 
 	tokenString, err := token.SignedString(signKey)
