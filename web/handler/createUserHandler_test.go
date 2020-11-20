@@ -55,7 +55,8 @@ func TestCreateUserHandlerNoErrorCase(t *testing.T) {
 		t.Error(err.Error())
 	}
 
-	newUser, err := model.NewUser(userId, emailAddress, hashedPassword)
+	newUser, err := model.NewUser(userId, emailAddress)
+	newUserPassword := model.NewUserPassword(newUser.UserId, hashedPassword)
 
 	if err != nil {
 		t.Error("error")
@@ -70,8 +71,8 @@ func TestCreateUserHandlerNoErrorCase(t *testing.T) {
 		t.Error(fmt.Sprintf("\nresult: %s\nexpected: %s", repo.User.EmailAddress, newUser.EmailAddress))
 	}
 
-	if reflect.DeepEqual(repo.User.Password, newUser.Password) {
-		t.Error(fmt.Sprintf("\nresult: %s\nexpected: %s", repo.User.Password, newUser.Password))
+	if reflect.DeepEqual(repo.UserPassword.Password, newUserPassword.Password) {
+		t.Error(fmt.Sprintf("\nresult: %s\nexpected: %s", repo.UserPassword.Password, newUserPassword.Password))
 	}
 }
 
