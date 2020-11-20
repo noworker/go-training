@@ -20,10 +20,10 @@ func KeyGenerator() {
 	publicKey := key.PublicKey
 
 	saveGobKey(ThisDir+"private.key", key)
-	savePEMKey(ThisDir+"private.pem", key)
+	savePEMKey(ThisDir+"private.pem.pkcs1", key)
 
 	saveGobKey(ThisDir+"public.key", publicKey)
-	savePublicPEMKey(ThisDir+"public.pem", publicKey)
+	savePublicPEMKey(ThisDir+"public.pem.pkcs1", publicKey)
 }
 
 func saveGobKey(fileName string, key interface{}) {

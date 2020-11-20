@@ -15,7 +15,7 @@ const (
 )
 
 func Checker(jwtStr string) (bool, error) {
-	verifyBytes, err := ioutil.ReadFile(ThisDir + "public.pem")
+	verifyBytes, err := ioutil.ReadFile(ThisDir + "public.pem.pkcs1")
 	if err != nil {
 		println("hoge1")
 		return false, err
@@ -27,7 +27,7 @@ func Checker(jwtStr string) (bool, error) {
 	}
 
 	token, err := jwt.Parse(jwtStr, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 			println("hoge3")
 			return nil, errors.CustomError{Message: UnexpectedSigningMethod}
 		} else {
