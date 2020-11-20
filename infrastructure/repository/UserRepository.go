@@ -26,31 +26,11 @@ func NewUserRepository(DB *gorm.DB) infrainterface.IUserRepository {
 	}
 }
 
-func (repository userRepository) Activate(userId model.UserId, password lib.HashedByteString) error {
-	if exists, err := repository.userExists(userId, password); !exists {
-		return err
-	}
-	user := table.User{
-		Activated: true,
-	}
+func (repository userRepository) Activate(userId model.UserId) error {
 	conn := map[string]interface{}{
 		"user_id": userId,
 	}
-	result := repository.DB.Where(conn).Save(&user)
-	if err := result.Error; err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (repository userRepository) createEmailActivationToken(userId model.UserId, token lib.Token) error {
-	EmailActivation := table.EmailActivationToken{
-		ActivationToken: table.ActivationToken(token),
-		UserId:          table.UserId(userId),
-		ExpiresAt:       time.Now().Add(activationTokenLifeTime).Unix(),
-	}
-	result := repository.DB.Create(&EmailActivation)
+	result := repository.DB.Model(&table.User{}).Where(conn).Update("activated", true)
 	if err := result.Error; err != nil {
 		return err
 	}
@@ -92,7 +72,7 @@ func (repository userRepository) userExists(userId model.UserId, password lib.Ha
 //	return user, nil
 //}
 
-func (repository userRepository) CreateUnactivatedNewUser(user model.User, userPassword model.UserPassword, token lib.Token) error {
+func (repository userRepository) CreateUnactivatedNewUser(user model.User, userPassword model.UserPassword) error {
 	if exists, err := repository.userExists(userPassword.UserId, userPassword.Password); exists {
 		return err
 	}
@@ -100,9 +80,6 @@ func (repository userRepository) CreateUnactivatedNewUser(user model.User, userP
 		return err
 	}
 	if err := repository.createUserPassword(userPassword.UserId, userPassword.Password); err != nil {
-		return err
-	}
-	if err := repository.createEmailActivationToken(user.UserId, token); err != nil {
 		return err
 	}
 	return nil
@@ -116,7 +93,6 @@ func (repository userRepository) createUser(userId model.UserId, emailAddress mo
 	}
 	result := repository.DB.Create(&user)
 	if err := result.Error; err != nil {
-		panic(err.Error())
 		return err
 	}
 	return nil
@@ -126,7 +102,6 @@ func (repository userRepository) createUserPassword(userId model.UserId, passwor
 	user := table.UserPassword{UserId: table.UserId(userId), Password: table.Password(password)}
 	result := repository.DB.Create(&user)
 	if err := result.Error; err != nil {
-		panic(err.Error())
 		return err
 	}
 	return nil

@@ -2,9 +2,7 @@ package repository
 
 import (
 	"go_training/domain/model"
-	"go_training/lib"
 	"go_training/lib/errors"
-	"reflect"
 )
 
 type UserRepositoryMock struct {
@@ -19,15 +17,15 @@ func NewUserRepositoryMock(existingUserId string) *UserRepositoryMock {
 	}
 }
 
-func (repository *UserRepositoryMock) Activate(userId model.UserId, password lib.HashedByteString) error {
-	if repository.User.UserId != userId || reflect.DeepEqual(repository.UserPassword.Password, password) {
+func (repository *UserRepositoryMock) Activate(userId model.UserId) error {
+	if repository.User.UserId != userId {
 		panic("userId or password does not match")
 	}
 	repository.User.Activated = true
 	return nil
 }
 
-func (repository *UserRepositoryMock) CreateUnactivatedNewUser(user model.User, userPassword model.UserPassword, token lib.Token) error {
+func (repository *UserRepositoryMock) CreateUnactivatedNewUser(user model.User, userPassword model.UserPassword) error {
 	if user.UserId == repository.ExistingUserId {
 		return errors.CustomError{Message: CanNotCreateExistingUserId}
 	}

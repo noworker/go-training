@@ -15,7 +15,7 @@ const apiPrefix = "/api"
 func InitServer(conf config.Config, db *gorm.DB) Handlers {
 	repositories := initializer.InitRepositories(db)
 	services := initializer.InitServices(repositories)
-	handlers := InitHandler(repositories, services)
+	handlers := InitHandler(repositories, services, conf)
 	e := NewRouter(handlers)
 	e.Logger.Fatal(e.Start(":8080"))
 	return handlers
@@ -30,6 +30,7 @@ func NewRouter(handlers Handlers) *echo.Echo {
 	//e.Use(middleware.Recover())
 
 	e.POST(fmt.Sprintf("%s/users", apiPrefix), handlers.CreateUserHandler.CreateUser)
+	e.GET("/activate_user", handlers.ActivateUserHandler.ActivateUser)
 
 	return e
 }
