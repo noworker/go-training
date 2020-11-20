@@ -58,11 +58,11 @@ func TokenChecker(jwtStr string, conf config.Config) (string, error) {
 		}
 		userId, ok := claims["user_id"].(string)
 		if !ok {
-			return "", errors.CustomError{Message: InvalidTokenFormat}
+			return "", errors.CustomError{Message: InvalidTokenFormat, Option: "failed to get user_id from token"}
 		}
 		expiredAt, ok := claims["exp"].(string)
 		if !ok {
-			return "", errors.CustomError{Message: InvalidTokenFormat, Option: "failed to get exp"}
+			return "", errors.CustomError{Message: InvalidTokenFormat, Option: "failed to get exp from token"}
 		}
 		exp, err := strconv.Atoi(expiredAt)
 		if err != nil {
