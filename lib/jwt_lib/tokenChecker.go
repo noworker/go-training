@@ -14,28 +14,30 @@ const (
 	NotValidYet             errors.ErrorMessage = "token is not valid yet"
 	CanNotHandle            errors.ErrorMessage = "can not handle this token"
 	InvalidTokenFormat      errors.ErrorMessage = "invalid token format"
+	ParseTokenError         errors.ErrorMessage = "parse token error"
+	ParsePublicKeyError     errors.ErrorMessage = "parse public key error"
 )
 
 func Checker(jwtStr string, conf config.Config) (string, error) {
 	verifyBytes, err := ioutil.ReadFile(conf.App.KeyPath + "public.pem")
 	if err != nil {
-		return "", err
+		return "", errors.CustomError{Message: NoFileError, Option: err.Error()}
 	}
 
 	signKey, err := jwt.ParseRSAPublicKeyFromPEM(verifyBytes)
 	if err != nil {
-		return "", err
+		return "", errors.CustomError{Message: ParsePublicKeyError, Option: err.Error()}
 	}
 
 	token, err := jwt.Parse(jwtStr, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
-			return nil, errors.CustomError{Message: UnexpectedSigningMethod}
+			return nil, errors.CustomError{Message: UnexpectedSigningMethod, Option: err.Error()}
 		} else {
 			return signKey, nil
 		}
 	})
 	if err != nil {
-		return "", err
+		return "", errors.CustomError{Message: ParseTokenError, Option: err.Error()}
 	}
 
 	if token.Valid {
@@ -50,15 +52,15 @@ func Checker(jwtStr string, conf config.Config) (string, error) {
 		return userId, nil
 	} else if ve, ok := err.(*jwt.ValidationError); ok {
 		if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-			return "", errors.CustomError{Message: NotEvenAToken}
+			return "", errors.CustomError{Message: NotEvenAToken, Option: err.Error()}
 		} else if ve.Errors&(jwt.ValidationErrorExpired) != 0 {
-			return "", errors.CustomError{Message: Expired}
+			return "", errors.CustomError{Message: Expired, Option: err.Error()}
 		} else if ve.Errors&(jwt.ValidationErrorNotValidYet) != 0 {
-			return "", errors.CustomError{Message: NotValidYet}
+			return "", errors.CustomError{Message: NotValidYet, Option: err.Error()}
 		} else {
-			return "", errors.CustomError{Message: CanNotHandle}
+			return "", errors.CustomError{Message: CanNotHandle, Option: err.Error()}
 		}
 	} else {
-		return "", errors.CustomError{Message: CanNotHandle}
+		return "", errors.CustomError{Message: CanNotHandle, Option: err.Error()}
 	}
 }
