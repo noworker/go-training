@@ -2,6 +2,7 @@ package jwt_lib
 
 import (
 	"github.com/dgrijalva/jwt-go"
+	"go_training/config"
 	"go_training/lib/errors"
 	"io/ioutil"
 )
@@ -14,8 +15,8 @@ const (
 	CanNotHandle            errors.ErrorMessage = "can not handle this token"
 )
 
-func Checker(jwtStr string) (bool, error) {
-	verifyBytes, err := ioutil.ReadFile(ThisDir + "public.pem")
+func Checker(jwtStr string, conf config.Config) (bool, error) {
+	verifyBytes, err := ioutil.ReadFile(conf.App.KeyPath + "public.pem")
 	if err != nil {
 		return false, err
 	}

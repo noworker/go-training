@@ -15,6 +15,7 @@ type Config struct {
 type AppConfig struct {
 	SenderEmailAddress string
 	EmailPassword      string
+	KeyPath            string
 }
 
 type DBConfig struct {
@@ -35,6 +36,7 @@ func NewConfig() Config {
 
 	conf.App.SenderEmailAddress = os.Getenv("SENDER_EMAIL_ADDRESS")
 	conf.App.EmailPassword = os.Getenv("EMAIL_PASSWORD")
+	conf.App.KeyPath = os.Getenv("KEY_PATH")
 	return conf
 }
 

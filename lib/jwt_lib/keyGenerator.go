@@ -7,12 +7,13 @@ import (
 	"encoding/gob"
 	"encoding/pem"
 	"fmt"
+	"go_training/config"
 	"os"
 )
 
 // 参考
 // https://gist.github.com/sdorra/1c95de8cb80da31610d2ad767cd6f251
-func KeyGenerator() {
+func KeyGenerator(conf config.Config) {
 	reader := rand.Reader
 	bitSize := 2048
 
@@ -20,12 +21,12 @@ func KeyGenerator() {
 	checkError(err)
 
 	publicKey := key.PublicKey
+	keyPath := conf.App.KeyPath
+	saveGobKey(keyPath+"private.key", key)
+	savePEMKey(keyPath+"private.pem", key)
 
-	saveGobKey(ThisDir+"private.key", key)
-	savePEMKey(ThisDir+"private.pem", key)
-
-	saveGobKey(ThisDir+"public.key", publicKey)
-	savePublicPEMKey(ThisDir+"public.pem", publicKey)
+	saveGobKey(keyPath+"public.key", publicKey)
+	savePublicPEMKey(keyPath+"public.pem", publicKey)
 }
 
 func saveGobKey(fileName string, key interface{}) {
@@ -56,16 +57,16 @@ func savePublicPEMKey(fileName string, pubkey rsa.PublicKey) {
 	asn1Bytes, err := x509.MarshalPKIXPublicKey(&pubkey)
 	checkError(err)
 
-	var pemkey = &pem.Block{
+	var pemKey = &pem.Block{
 		Type:  "PUBLIC KEY",
 		Bytes: asn1Bytes,
 	}
 
-	pemfile, err := os.Create(fileName)
+	pemFile, err := os.Create(fileName)
 	checkError(err)
-	defer pemfile.Close()
+	defer pemFile.Close()
 
-	err = pem.Encode(pemfile, pemkey)
+	err = pem.Encode(pemFile, pemKey)
 	checkError(err)
 }
 

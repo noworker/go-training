@@ -3,13 +3,12 @@ package jwt_lib
 import (
 	"github.com/dgrijalva/jwt-go"
 	mdate "github.com/matsuri-tech/date-go"
+	"go_training/config"
 	"io/ioutil"
 )
 
-const ThisDir = "/home/ryo/matsuri/go-training/"
-
-func Generator(userId string) (string, error) {
-	signBytes, err := ioutil.ReadFile(ThisDir + "private.pem")
+func Generator(userId string, conf config.Config) (string, error) {
+	signBytes, err := ioutil.ReadFile(conf.App.KeyPath + "private.pem")
 	if err != nil {
 		return "", err
 	}
