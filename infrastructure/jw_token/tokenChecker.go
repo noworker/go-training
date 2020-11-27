@@ -42,7 +42,7 @@ func NewTokenChecker(path string) (infrainterface.ITokenChecker, error) {
 	return TokenChecker{publicKey: pubKey}, nil
 }
 
-func (c TokenChecker) CheckActivateUserToken(jwtStr model.Token) (string, error) {
+func (c TokenChecker) CheckActivateUserToken(jwtStr model.Token) (model.UserId, error) {
 	signKey, err := jwt.ParseRSAPublicKeyFromPEM(c.publicKey)
 	if err != nil {
 		return "", errors.CustomError{Message: ParsePublicKeyError, Option: err.Error()}
@@ -79,7 +79,7 @@ func (c TokenChecker) CheckActivateUserToken(jwtStr model.Token) (string, error)
 		if isExpired(exp) {
 			return "", errors.CustomError{Message: TokenIsExpired}
 		}
-		return userId, nil
+		return model.UserId(userId), nil
 	} else if ve, ok := err.(*jwt.ValidationError); ok {
 		if ve.Errors&jwt.ValidationErrorMalformed != 0 {
 			return "", errors.CustomError{Message: NotEvenAToken, Option: ve.Error()}

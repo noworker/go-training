@@ -19,7 +19,7 @@ func (service ActivateUserService) ActivateUser(token model.Token) error {
 	if err != nil {
 		return err
 	}
-	if err := service.UserRepository.Activate(model.UserId(userId)); err != nil {
+	if err := service.UserRepository.Activate(userId); err != nil {
 		return err
 	}
 	return nil
