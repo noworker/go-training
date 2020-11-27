@@ -25,26 +25,23 @@ func NewResendActivationEmailService(userRepository infrainterface.IUserReposito
 	return ResendActivationEmailService{UserRepository: userRepository, TokenGenerator: tokenGenerator, EmailSender: emailSender}
 }
 
-func (service ResendActivationEmailService) ResendActivationEmail(userId, password, address string) error {
+func (service ResendActivationEmailService) ResendActivationEmail(userId model.UserId, password string, address model.EmailAddress) error {
 	hashedPassword, err := lib.MakeHashedStringFromPassword(password)
 	if err != nil {
 		return api_error.InvalidRequestError(err)
 	}
 
-	modelUserId := model.UserId(userId)
-	modelAddress := model.EmailAddress(address)
-
-	err = service.checkIfUserIsActivated(modelUserId, hashedPassword)
+	err = service.checkIfUserIsActivated(userId, hashedPassword)
 	if err != nil {
-		return err
+		return api_error.InvalidRequestError(err)
 	}
 
-	token, err := service.TokenGenerator.GenerateActivateUserToken(modelUserId)
+	token, err := service.TokenGenerator.GenerateActivateUserToken(userId)
 	if err != nil {
-		return err
+		return api_error.InvalidRequestError(err)
 	}
 
-	go service.EmailSender.SendEmail(modelAddress, token)
+	go service.EmailSender.SendEmail(address, token)
 	return nil
 }
 
