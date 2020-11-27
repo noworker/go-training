@@ -7,6 +7,7 @@ import (
 	"go_training/infrastructure/table"
 	"go_training/lib"
 	"go_training/lib/errors"
+	"go_training/web/api_error"
 	"time"
 )
 
@@ -74,13 +75,13 @@ func (repository userRepository) userExists(userId model.UserId, password lib.Ha
 
 func (repository userRepository) CreateUser(user model.User, userPassword model.UserPassword) error {
 	if exists, err := repository.userExists(userPassword.UserId, userPassword.Password); exists {
-		return err
+		return api_error.InvalidRequestError(err)
 	}
 	if err := repository.createUser(user.UserId, user.EmailAddress); err != nil {
-		return err
+		return api_error.InternalError(err)
 	}
 	if err := repository.createUserPassword(userPassword.UserId, userPassword.Password); err != nil {
-		return err
+		return api_error.InternalError(err)
 	}
 	return nil
 }
