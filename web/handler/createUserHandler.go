@@ -29,15 +29,5 @@ func (handler CreateUserHandler) CreateUser(c echo.Context) error {
 		return api_error.InvalidRequestError(err)
 	}
 
-	token, err := handler.createUserService.TokenGenerator.GenerateActivateUserToken(user.UserId)
-	if err != nil {
-		return api_error.InternalError(err)
-	}
-
-	err = handler.createUserService.EmailSender.SendEmail(user.EmailAddress, token)
-	if err != nil {
-		return api_error.InternalError(err)
-	}
-
-	return c.String(http.StatusCreated, fmt.Sprintf("User is successfully created. \ntoken: %s", token))
+	return c.String(http.StatusCreated, fmt.Sprintf("User is successfully created. "))
 }
