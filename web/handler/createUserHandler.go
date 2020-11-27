@@ -5,7 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"go_training/config"
 	"go_training/domain/service"
-	"go_training/lib/jwt_lib"
+	"go_training/infrastructure/jw_token"
 	"go_training/web/api_error"
 	"net/http"
 )
@@ -29,7 +29,7 @@ func (handler CreateUserHandler) CreateUser(c echo.Context) error {
 	if err := handler.createUserService.CreateUser(user.UserId, user.EmailAddress, user.Password); err != nil {
 		return api_error.InvalidRequestError(err)
 	}
-	token, err := jwt_lib.TokenGenerator(user.UserId, handler.conf)
+	token, err := jw_token.TokenGenerator(user.UserId, handler.conf)
 	if err != nil {
 		return api_error.InvalidRequestError(err)
 	}

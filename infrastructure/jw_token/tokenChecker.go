@@ -1,4 +1,4 @@
-package jwt_lib
+package jw_token
 
 import (
 	"github.com/dgrijalva/jwt-go"
@@ -74,15 +74,15 @@ func TokenChecker(jwtStr string, conf config.Config) (string, error) {
 		return userId, nil
 	} else if ve, ok := err.(*jwt.ValidationError); ok {
 		if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-			return "", errors.CustomError{Message: NotEvenAToken, Option: err.Error()}
+			return "", errors.CustomError{Message: NotEvenAToken, Option: ve.Error()}
 		} else if ve.Errors&(jwt.ValidationErrorExpired) != 0 {
-			return "", errors.CustomError{Message: Expired, Option: err.Error()}
+			return "", errors.CustomError{Message: Expired, Option: ve.Error()}
 		} else if ve.Errors&(jwt.ValidationErrorNotValidYet) != 0 {
-			return "", errors.CustomError{Message: NotValidYet, Option: err.Error()}
+			return "", errors.CustomError{Message: NotValidYet, Option: ve.Error()}
 		} else {
-			return "", errors.CustomError{Message: CanNotHandle, Option: err.Error()}
+			return "", errors.CustomError{Message: CanNotHandle, Option: ve.Error()}
 		}
 	} else {
-		return "", errors.CustomError{Message: CanNotHandle, Option: err.Error()}
+		return "", errors.CustomError{Message: CanNotHandle, Option: ve.Error()}
 	}
 }

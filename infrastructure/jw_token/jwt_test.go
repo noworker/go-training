@@ -1,4 +1,4 @@
-package jwt_lib
+package jw_token
 
 import (
 	"go_training/config"

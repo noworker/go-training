@@ -5,7 +5,7 @@ import (
 	"go_training/config"
 	"go_training/domain/infrainterface"
 	"go_training/domain/model"
-	"go_training/lib/jwt_lib"
+	"go_training/infrastructure/jw_token"
 	"go_training/web/api_error"
 	"net/http"
 )
@@ -17,7 +17,7 @@ type ActivateUserHandler struct {
 
 func (handler ActivateUserHandler) ActivateUser(c echo.Context) error {
 	token := c.QueryParam("token")
-	userId, err := jwt_lib.TokenChecker(token, handler.conf)
+	userId, err := jw_token.TokenChecker(token, handler.conf)
 	if err != nil {
 		return api_error.InvalidRequestError(err)
 	}
