@@ -8,11 +8,14 @@ import (
 	"go_training/lib"
 	"go_training/lib/errors"
 	"go_training/web/api_error"
+	"golang.org/x/crypto/bcrypt"
 	"time"
 )
 
 const (
 	CanNotCreateExistingUserId errors.ErrorMessage = "can_not_create_existing_user_id"
+	UserNotFoundError          errors.ErrorMessage = "user not found"
+	InvalidPassword            errors.ErrorMessage = "invalid password"
 )
 
 const activationTokenLifeTime = time.Hour
@@ -39,40 +42,67 @@ func (repository userRepository) Activate(userId model.UserId) error {
 	return nil
 }
 
-func (repository userRepository) UserExists(userId model.UserId, password lib.HashedByteString) bool {
+func (repository userRepository) UserExists(userId model.UserId, password string) bool {
 	userPassword := table.UserPassword{}
 	conn := map[string]interface{}{
-		"user_id":  userId,
-		"password": password,
+		"user_id": userId,
 	}
 	result := repository.DB.Where(conn).Find(&userPassword)
 	if result.RecordNotFound() {
 		return false
 	}
+	if err := bcrypt.CompareHashAndPassword([]byte(userPassword.Password), []byte(password)); err != nil {
+		return false
+	}
 	return true
 }
 
-func (repository userRepository) GetUserByIdAndPassword(userId model.UserId, password lib.HashedByteString) (table.User, error) {
-	user := table.User{}
+func (repository userRepository) GetUserByIdAndPassword(userId model.UserId, password string) (table.User, error) {
+	userPassword := table.UserPassword{}
 	conn := map[string]interface{}{
-		"user_id":  userId,
-		"password": password,
+		"user_id": userId,
 	}
-	result := repository.DB.Where(conn).Find(&user)
+
+	result := repository.DB.Where(conn).Find(&userPassword)
 	if err := result.Error; err != nil {
-		return table.User{}, err
+		return table.User{}, errors.CustomError{Message: UserNotFoundError,
+			Option: "UserRepository:66"}
 	}
+
+	if result.RecordNotFound() {
+		return table.User{}, errors.CustomError{Message: UserNotFoundError}
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(userPassword.Password), []byte(password)); err != nil {
+		return table.User{}, errors.CustomError{Message: InvalidPassword}
+	}
+
+	user := table.User{}
+	conn2 := map[string]interface{}{
+		"user_id": userId,
+	}
+
+	result = repository.DB.Where(conn2).Find(&user)
+	if err := result.Error; err != nil {
+		return table.User{}, errors.CustomError{Message: UserNotFoundError,
+			Option: "UserRepository:80"}
+	}
+
+	if result.RecordNotFound() {
+		return table.User{}, errors.CustomError{Message: UserNotFoundError}
+	}
+
 	return user, nil
 }
 
-func (repository userRepository) CreateNewUser(user model.User, userPassword model.UserPassword) error {
-	if exists := repository.UserExists(userPassword.UserId, userPassword.Password); exists {
+func (repository userRepository) CreateNewUser(user model.User, rawPassword string, hashedPassword lib.HashedByteString) error {
+	if exists := repository.UserExists(user.UserId, rawPassword); exists {
 		return api_error.InvalidRequestError(errors.CustomError{Message: CanNotCreateExistingUserId})
 	}
 	if err := repository.createUser(user.UserId, user.EmailAddress); err != nil {
 		return api_error.InternalError(err)
 	}
-	if err := repository.createUserPassword(userPassword.UserId, userPassword.Password); err != nil {
+	if err := repository.createUserPassword(user.UserId, hashedPassword); err != nil {
 		return api_error.InternalError(err)
 	}
 	return nil

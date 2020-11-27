@@ -5,8 +5,9 @@ import (
 )
 
 type Handlers struct {
-	CreateUserHandler   CreateUserHandler
-	ActivateUserHandler ActivateUserHandler
+	CreateUserHandler            CreateUserHandler
+	ActivateUserHandler          ActivateUserHandler
+	ResendActivationEmailHandler ResendActivationEmailHandler
 }
 
 func InitHandler(repositories initializer.Repositories, services initializer.Services, infras initializer.Infras) Handlers {
@@ -18,9 +19,14 @@ func InitHandler(repositories initializer.Repositories, services initializer.Ser
 		activateUserService: services.ActivateUserService,
 	}
 
+	resendActivationEmailHandler := ResendActivationEmailHandler{
+		resendActivationEmailService: services.ResendActivationEmailService,
+	}
+
 	handlers := Handlers{
-		CreateUserHandler:   createUserHandler,
-		ActivateUserHandler: activateUserHandler,
+		CreateUserHandler:            createUserHandler,
+		ActivateUserHandler:          activateUserHandler,
+		ResendActivationEmailHandler: resendActivationEmailHandler,
 	}
 	return handlers
 }

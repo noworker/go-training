@@ -31,7 +31,8 @@ func NewRouter(handlers Handlers) *echo.Echo {
 	//e.Use(middleware.Recover())
 
 	e.POST(fmt.Sprintf("%s/users", apiPrefix), handlers.CreateUserHandler.CreateUser)
-	e.GET("/activate_user", handlers.ActivateUserHandler.ActivateUser)
+	e.GET(fmt.Sprintf("%s/activate_user", apiPrefix), handlers.ActivateUserHandler.ActivateUser)
+	e.POST(fmt.Sprintf("%s/resend_activation_email", apiPrefix), handlers.ResendActivationEmailHandler.ResendActivationEmail)
 
 	return e
 }

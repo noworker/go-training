@@ -8,7 +8,6 @@ import (
 
 type IUserRepository interface {
 	Activate(userId model.UserId) error
-	UserExists(userId model.UserId, password lib.HashedByteString) bool
-	GetUserByIdAndPassword(userId model.UserId, password lib.HashedByteString) (table.User, error)
-	CreateNewUser(user model.User, userPassword model.UserPassword) error
+	GetUserByIdAndPassword(userId model.UserId, password string) (table.User, error)
+	CreateNewUser(user model.User, rawPassword string, hashedPassword lib.HashedByteString) error
 }

@@ -16,14 +16,15 @@ func NewResendActivationEmailHandler(resendActivationEmailService service.Resend
 	return ResendActivationEmailHandler{resendActivationEmailService: resendActivationEmailService}
 }
 
-func (handler ResendActivationEmailHandler) ResentActivationEmail(c echo.Context) error {
-	userId := c.QueryParam("user_id")
-	password := c.QueryParam("password")
-	emailAddress := c.QueryParam("email_address")
+func (handler ResendActivationEmailHandler) ResendActivationEmail(c echo.Context) error {
+	user := new(User)
+	if err := c.Bind(user); err != nil {
+		return api_error.InvalidRequestError(err)
+	}
 
-	err := handler.resendActivationEmailService.ResendActivationEmail(model.UserId(userId), password, model.EmailAddress(emailAddress))
+	err := handler.resendActivationEmailService.ResendActivationEmail(model.UserId(user.UserId), user.Password, model.EmailAddress(user.EmailAddress))
 	if err != nil {
-		return api_error.InternalError(err)
+		return err
 	}
 
 	return c.String(http.StatusCreated, "email is successfully sent.")

@@ -18,6 +18,7 @@ const maxPasswordLen = 255
 const bcryptCost = 11
 
 func MakeHashedStringFromPassword(s string) (HashedByteString, error) {
+	println("MakeHashedStringFromPassword: ", s)
 	if len(s) < minPasswordLen {
 		return []byte{}, api_error.InvalidRequestError(errors.CustomError{Message: PasswordIsTooShort})
 	}
@@ -28,5 +29,6 @@ func MakeHashedStringFromPassword(s string) (HashedByteString, error) {
 	if err != nil {
 		return []byte{}, api_error.InternalError(err)
 	}
+	println("MakeHashedStringFromPassword: ", string(hashedPassword))
 	return hashedPassword, nil
 }

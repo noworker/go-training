@@ -17,7 +17,7 @@ func NewEmailSender(address, password string) infrainterface.IEmail {
 }
 
 func (sender Sender) SendEmail(address model.EmailAddress, token model.Token) {
-	tokenURL := "http://localhost:8080/activate_user?token=" + token
+	tokenURL := "http://localhost:8080/api/activate_user?token=" + token
 	auth := smtp.PlainAuth(sender.emailAddress, sender.emailAddress, sender.password, "smtp.gmail.com")
 
 	err := smtp.SendMail("smtp.gmail.com:587", auth, sender.emailAddress, []string{string(address)}, messageBuilder(address, tokenURL))

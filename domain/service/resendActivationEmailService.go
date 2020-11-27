@@ -3,7 +3,6 @@ package service
 import (
 	"go_training/domain/infrainterface"
 	"go_training/domain/model"
-	"go_training/lib"
 	"go_training/lib/errors"
 	"go_training/web/api_error"
 )
@@ -26,14 +25,9 @@ func NewResendActivationEmailService(userRepository infrainterface.IUserReposito
 }
 
 func (service ResendActivationEmailService) ResendActivationEmail(userId model.UserId, password string, address model.EmailAddress) error {
-	hashedPassword, err := lib.MakeHashedStringFromPassword(password)
+	err := service.checkIfUserIsActivated(userId, password)
 	if err != nil {
-		return api_error.InvalidRequestError(err)
-	}
-
-	err = service.checkIfUserIsActivated(userId, hashedPassword)
-	if err != nil {
-		return api_error.InvalidRequestError(err)
+		return err
 	}
 
 	token, err := service.TokenGenerator.GenerateActivateUserToken(userId)
@@ -45,13 +39,8 @@ func (service ResendActivationEmailService) ResendActivationEmail(userId model.U
 	return nil
 }
 
-func (service ResendActivationEmailService) checkIfUserIsActivated(userId model.UserId, hashedPassword lib.HashedByteString) error {
-	exists := service.UserRepository.UserExists(userId, hashedPassword)
-	if !exists {
-		return api_error.InvalidRequestError(errors.CustomError{Message: NoUserError})
-	}
-
-	user, err := service.UserRepository.GetUserByIdAndPassword(userId, hashedPassword)
+func (service ResendActivationEmailService) checkIfUserIsActivated(userId model.UserId, password string) error {
+	user, err := service.UserRepository.GetUserByIdAndPassword(userId, password)
 	if err != nil {
 		return api_error.InvalidRequestError(err)
 	}
