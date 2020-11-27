@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go_training/domain/model"
 	"go_training/domain/service"
+	email "go_training/infrastructure/emailSender"
 	"go_training/infrastructure/jw_token"
 	"go_training/infrastructure/repository"
 	"go_training/initializer"
@@ -22,8 +23,9 @@ const existingUserId = "existing"
 
 func TestCreateUserHandlerNoErrorCase(t *testing.T) {
 	repo := repository.NewUserRepositoryMock(existingUserId)
-	createUserService := service.NewCreateUserService(repo)
 	tokenGenerator, _ := jw_token.NewTokenGeneratorMock("aaa")
+	emailSender := email.NewEmailSenderMock("hoge", "huga")
+	createUserService := service.NewCreateUserService(repo, tokenGenerator, emailSender)
 	handlers := InitHandler(
 		initializer.Repositories{
 			UserRepository: repo,
@@ -80,8 +82,9 @@ func TestCreateUserHandlerNoErrorCase(t *testing.T) {
 
 func TestCreateUserHandlerErrorCase1(t *testing.T) {
 	repo := repository.NewUserRepositoryMock(existingUserId)
-	createUserService := service.NewCreateUserService(repo)
 	tokenGenerator, _ := jw_token.NewTokenGeneratorMock("aaa")
+	emailSender := email.NewEmailSenderMock("hoge", "huga")
+	createUserService := service.NewCreateUserService(repo, tokenGenerator, emailSender)
 	handlers := InitHandler(
 		initializer.Repositories{
 			UserRepository: repo,
@@ -119,8 +122,9 @@ func TestCreateUserHandlerErrorCase1(t *testing.T) {
 
 func TestCreateUserHandlerErrorCase2(t *testing.T) {
 	repo := repository.NewUserRepositoryMock(existingUserId)
-	createUserService := service.NewCreateUserService(repo)
 	tokenGenerator, _ := jw_token.NewTokenGeneratorMock("aaa")
+	emailSender := email.NewEmailSenderMock("hoge", "huga")
+	createUserService := service.NewCreateUserService(repo, tokenGenerator, emailSender)
 	handlers := InitHandler(
 		initializer.Repositories{
 			UserRepository: repo,
@@ -158,8 +162,9 @@ func TestCreateUserHandlerErrorCase2(t *testing.T) {
 
 func TestCreateUserHandlerErrorCase3(t *testing.T) {
 	repo := repository.NewUserRepositoryMock(existingUserId)
-	createUserService := service.NewCreateUserService(repo)
 	tokenGenerator, _ := jw_token.NewTokenGeneratorMock("aaa")
+	emailSender := email.NewEmailSenderMock("hoge", "huga")
+	createUserService := service.NewCreateUserService(repo, tokenGenerator, emailSender)
 	handlers := InitHandler(
 		initializer.Repositories{
 			UserRepository: repo,
@@ -195,8 +200,9 @@ func TestCreateUserHandlerErrorCase3(t *testing.T) {
 
 func TestCreateUserHandlerErrorCase4(t *testing.T) {
 	repo := repository.NewUserRepositoryMock(existingUserId)
-	createUserService := service.NewCreateUserService(repo)
 	tokenGenerator, _ := jw_token.NewTokenGeneratorMock("aaa")
+	emailSender := email.NewEmailSenderMock("hoge", "huga")
+	createUserService := service.NewCreateUserService(repo, tokenGenerator, emailSender)
 	handlers := InitHandler(
 		initializer.Repositories{
 			UserRepository: repo,
@@ -234,8 +240,9 @@ func TestCreateUserHandlerErrorCase4(t *testing.T) {
 
 func TestCreateUserHandlerErrorCase5(t *testing.T) {
 	repo := repository.NewUserRepositoryMock(existingUserId)
-	createUserService := service.NewCreateUserService(repo)
 	tokenGenerator, _ := jw_token.NewTokenGeneratorMock("aaa")
+	emailSender := email.NewEmailSenderMock("hoge", "huga")
+	createUserService := service.NewCreateUserService(repo, tokenGenerator, emailSender)
 	handlers := InitHandler(
 		initializer.Repositories{
 			UserRepository: repo,
@@ -273,8 +280,9 @@ func TestCreateUserHandlerErrorCase5(t *testing.T) {
 
 func TestCreateUserHandlerErrorCase6(t *testing.T) {
 	repo := repository.NewUserRepositoryMock(existingUserId)
-	createUserService := service.NewCreateUserService(repo)
 	tokenGenerator, _ := jw_token.NewTokenGeneratorMock("aaa")
+	emailSender := email.NewEmailSenderMock("hoge", "huga")
+	createUserService := service.NewCreateUserService(repo, tokenGenerator, emailSender)
 	handlers := InitHandler(
 		initializer.Repositories{
 			UserRepository: repo,

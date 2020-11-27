@@ -3,14 +3,12 @@ package handler
 import (
 	"fmt"
 	"github.com/labstack/echo/v4"
-	"go_training/domain/infrainterface"
 	"go_training/domain/service"
 	"go_training/web/api_error"
 	"net/http"
 )
 
 type CreateUserHandler struct {
-	tokenGenerator    infrainterface.ITokenGenerator
 	createUserService service.CreateUserService
 }
 
@@ -28,9 +26,14 @@ func (handler CreateUserHandler) CreateUser(c echo.Context) error {
 	if err := handler.createUserService.CreateUser(user.UserId, user.EmailAddress, user.Password); err != nil {
 		return api_error.InvalidRequestError(err)
 	}
-	token, err := handler.tokenGenerator.GenerateActivateUserToken(user.UserId)
+	token, err := handler.createUserService.TokenGenerator.GenerateActivateUserToken(user.UserId)
 	if err != nil {
-		return api_error.InvalidRequestError(err)
+		return api_error.InternalError(err)
+	}
+
+	err = handler.createUserService.EmailSender.SendEmail(user.EmailAddress, token)
+	if err != nil {
+		return api_error.InternalError(err)
 	}
 	return c.String(http.StatusCreated, fmt.Sprintf("User is successfully created. \ntoken: %s", token))
 }

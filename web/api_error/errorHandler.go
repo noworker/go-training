@@ -9,6 +9,10 @@ func InvalidRequestError(err error) *echo.HTTPError {
 	return &echo.HTTPError{Code: 400, Message: err.Error()}
 }
 
+func InternalError(err error) *echo.HTTPError {
+	return &echo.HTTPError{Code: 500, Message: err.Error()}
+}
+
 type ApiError struct {
 	StatusCode int    `json:"status_code"`
 	Message    string `json:"message"`

@@ -11,7 +11,6 @@ type Handlers struct {
 
 func InitHandler(repositories initializer.Repositories, services initializer.Services, infras initializer.Infras) Handlers {
 	createUserHandler := CreateUserHandler{
-		tokenGenerator:    infras.TokenGenerator,
 		createUserService: services.CreateUserService,
 	}
 

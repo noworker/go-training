@@ -3,7 +3,7 @@ package initializer
 import (
 	"go_training/config"
 	"go_training/domain/infrainterface"
-	"go_training/infrastructure"
+	email "go_training/infrastructure/emailSender"
 	"go_training/infrastructure/jw_token"
 )
 
@@ -14,7 +14,7 @@ type Infras struct {
 }
 
 func InitInfras(conf config.Config) Infras {
-	emailSender := infrastructure.NewEmailSender(conf.App.SenderEmailAddress, conf.App.EmailPassword)
+	emailSender := email.NewEmailSender(conf.App.SenderEmailAddress, conf.App.EmailPassword)
 	tokenGenerator, err := jw_token.NewTokenGenerator(conf.App.KeyPath)
 	if err != nil {
 		panic(err.Error())

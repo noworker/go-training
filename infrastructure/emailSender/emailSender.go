@@ -1,19 +1,21 @@
-package infrastructure
+package email
 
 import (
+	"go_training/domain/infrainterface"
 	"net/smtp"
 )
 
-type EMailSender struct {
+type Sender struct {
 	emailAddress string
 	password     string
 }
 
-func NewEmailSender(address, password string) EMailSender {
-	return EMailSender{emailAddress: address, password: password}
+func NewEmailSender(address, password string) infrainterface.IEmail {
+	return Sender{emailAddress: address, password: password}
 }
 
-func (sender EMailSender) SendEmail(to, tokenURL string) error {
+func (sender Sender) SendEmail(to, token string) error {
+	tokenURL := "https://localhost:8080?token=" + token
 	auth := smtp.PlainAuth(sender.emailAddress, sender.emailAddress, sender.password, "smtp.gmail.com")
 
 	err := smtp.SendMail("smtp.gmail.com:587", auth, sender.emailAddress, []string{to}, messageBuilder(to, tokenURL))
