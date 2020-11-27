@@ -4,13 +4,12 @@ import (
 	"github.com/labstack/echo/v4"
 	"go_training/domain/infrainterface"
 	"go_training/domain/model"
-	"go_training/infrastructure/jw_token"
 	"go_training/web/api_error"
 	"net/http"
 )
 
 type ActivateUserHandler struct {
-	tokenChecker         jw_token.TokenChecker
+	tokenChecker         infrainterface.ITokenChecker
 	createUserRepository infrainterface.IUserRepository
 }
 

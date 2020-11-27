@@ -5,7 +5,6 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/joho/godotenv"
 	"go_training/config"
-	"go_training/infrastructure/jw_token"
 	"go_training/web/handler"
 	"log"
 )
@@ -20,7 +19,6 @@ func main() {
 
 func start() {
 	conf := config.NewConfig()
-	jw_token.Generate(conf)
 	db, err := gorm.Open("mysql", conf.DB.GetSettingStr())
 	if err != nil {
 		panic(err.Error())
