@@ -17,7 +17,7 @@ type ActivateUserHandler struct {
 
 func (handler ActivateUserHandler) ActivateUser(c echo.Context) error {
 	token := c.QueryParam("token")
-	userId, err := jw_token.TokenChecker(token, handler.conf)
+	userId, err := jw_token.CheckActivateUserToken(token, handler.conf)
 	if err != nil {
 		return api_error.InvalidRequestError(err)
 	}

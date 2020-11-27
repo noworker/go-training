@@ -2,7 +2,6 @@ package jw_token
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	"go_training/config"
 	"go_training/lib/errors"
 	"io/ioutil"
 	"strconv"
@@ -17,7 +16,7 @@ const (
 	CanNotHandle            errors.ErrorMessage = "can not handle this token"
 	InvalidTokenFormat      errors.ErrorMessage = "invalid token format"
 	ParseTokenError         errors.ErrorMessage = "parse token error"
-	ParsePublicKeyError     errors.ErrorMessage = "parse public key error"
+	ParsePublicKeyError     errors.ErrorMessage = "parse public privateKey error"
 	TokenIsExpired          errors.ErrorMessage = "token is expired"
 )
 
@@ -29,13 +28,20 @@ func isExpired(exp int) bool {
 	return false
 }
 
-func TokenChecker(jwtStr string, conf config.Config) (string, error) {
-	verifyBytes, err := ioutil.ReadFile(conf.App.KeyPath + "public.pem")
-	if err != nil {
-		return "", errors.CustomError{Message: NoFileError, Option: err.Error()}
-	}
+type TokenChecker struct {
+	publicKey []byte
+}
 
-	signKey, err := jwt.ParseRSAPublicKeyFromPEM(verifyBytes)
+func NewTokenChecker(path string) (TokenChecker, error) {
+	pubKey, err := ioutil.ReadFile(path + "public.pem")
+	if err != nil {
+		return TokenChecker{}, errors.CustomError{Message: NoFileError, Option: err.Error()}
+	}
+	return TokenChecker{publicKey: pubKey}, nil
+}
+
+func (c TokenChecker) CheckActivateUserToken(jwtStr string) (string, error) {
+	signKey, err := jwt.ParseRSAPublicKeyFromPEM(c.publicKey)
 	if err != nil {
 		return "", errors.CustomError{Message: ParsePublicKeyError, Option: err.Error()}
 	}

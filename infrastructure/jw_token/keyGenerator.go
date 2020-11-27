@@ -13,48 +13,66 @@ import (
 
 // 参考
 // https://gist.github.com/sdorra/1c95de8cb80da31610d2ad767cd6f251
-func KeyGenerator(conf config.Config) {
+
+type KeyGenerator struct {
+	path       string
+	privateKey *rsa.PrivateKey
+	pubKey     rsa.PublicKey
+}
+
+func NewKeyGenerator(path string) KeyGenerator {
 	reader := rand.Reader
 	bitSize := 2048
 
 	key, err := rsa.GenerateKey(reader, bitSize)
 	mustKeyGen(err)
 
-	publicKey := key.PublicKey
-	keyPath := conf.App.KeyPath
-	saveGobKey(keyPath+"private.key", key)
-	savePEMKey(keyPath+"private.pem", key)
-
-	saveGobKey(keyPath+"public.key", publicKey)
-	savePublicPEMKey(keyPath+"public.pem", publicKey)
+	return KeyGenerator{path: path, privateKey: key, pubKey: key.PublicKey}
 }
 
-func saveGobKey(fileName string, key interface{}) {
-	outFile, err := os.Create(fileName)
+func (g KeyGenerator) Generate(conf config.Config) {
+	g.savePrivateKey()
+	g.savePEMKey()
+	g.savePublicKey()
+	g.savePublicPEMKey()
+}
+
+func (g KeyGenerator) savePrivateKey() {
+	outFile, err := os.Create(g.path + "private.key")
 	mustKeyGen(err)
 	defer outFile.Close()
 
 	encoder := gob.NewEncoder(outFile)
-	err = encoder.Encode(key)
+	err = encoder.Encode(g.privateKey)
 	mustKeyGen(err)
 }
 
-func savePEMKey(fileName string, key *rsa.PrivateKey) {
-	outFile, err := os.Create(fileName)
+func (g KeyGenerator) savePublicKey() {
+	outFile, err := os.Create(g.path + "public.key")
+	mustKeyGen(err)
+	defer outFile.Close()
+
+	encoder := gob.NewEncoder(outFile)
+	err = encoder.Encode(g.pubKey)
+	mustKeyGen(err)
+}
+
+func (g KeyGenerator) savePEMKey() {
+	outFile, err := os.Create(g.path + "private.pem")
 	mustKeyGen(err)
 	defer outFile.Close()
 
 	var privateKey = &pem.Block{
 		Type:  "PRIVATE KEY",
-		Bytes: x509.MarshalPKCS1PrivateKey(key),
+		Bytes: x509.MarshalPKCS1PrivateKey(g.privateKey),
 	}
 
 	err = pem.Encode(outFile, privateKey)
 	mustKeyGen(err)
 }
 
-func savePublicPEMKey(fileName string, pubKey rsa.PublicKey) {
-	asn1Bytes, err := x509.MarshalPKIXPublicKey(&pubKey)
+func (g KeyGenerator) savePublicPEMKey() {
+	asn1Bytes, err := x509.MarshalPKIXPublicKey(g.pubKey)
 	mustKeyGen(err)
 
 	var pemKey = &pem.Block{
@@ -62,7 +80,7 @@ func savePublicPEMKey(fileName string, pubKey rsa.PublicKey) {
 		Bytes: asn1Bytes,
 	}
 
-	pemFile, err := os.Create(fileName)
+	pemFile, err := os.Create(g.path + "public.pem")
 	mustKeyGen(err)
 	defer pemFile.Close()
 
@@ -72,6 +90,6 @@ func savePublicPEMKey(fileName string, pubKey rsa.PublicKey) {
 
 func mustKeyGen(err error) {
 	if err != nil {
-		panic(fmt.Sprintf("key generate error: %s", err.Error()))
+		panic(fmt.Sprintf("privateKey generate error: %s", err.Error()))
 	}
 }

@@ -10,7 +10,7 @@ import (
 
 const (
 	NoFileError          errors.ErrorMessage = "no file"
-	ParsePrivateKeyError errors.ErrorMessage = "parse private key error"
+	ParsePrivateKeyError errors.ErrorMessage = "parse private privateKey error"
 	EncodeTokenError     errors.ErrorMessage = "encode token error"
 )
 
