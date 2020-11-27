@@ -2,6 +2,7 @@ package jw_token
 
 import (
 	"github.com/dgrijalva/jwt-go"
+	"go_training/domain/infrainterface"
 	"go_training/lib/errors"
 	"io/ioutil"
 	"strconv"
@@ -32,7 +33,7 @@ type TokenChecker struct {
 	publicKey []byte
 }
 
-func NewTokenChecker(path string) (TokenChecker, error) {
+func NewTokenChecker(path string) (infrainterface.ITokenChecker, error) {
 	pubKey, err := ioutil.ReadFile(path + "public.pem")
 	if err != nil {
 		return TokenChecker{}, errors.CustomError{Message: NoFileError, Option: err.Error()}
