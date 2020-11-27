@@ -2,6 +2,7 @@ package lib
 
 import (
 	"go_training/lib/errors"
+	"go_training/web/api_error"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -18,14 +19,14 @@ const bcryptCost = 11
 
 func MakeHashedStringFromPassword(s string) (HashedByteString, error) {
 	if len(s) < minPasswordLen {
-		return []byte{}, errors.CustomError{Message: PasswordIsTooShort}
+		return []byte{}, api_error.InvalidRequestError(errors.CustomError{Message: PasswordIsTooShort})
 	}
 	if len(s) > maxPasswordLen {
-		return []byte{}, errors.CustomError{Message: PasswordItTooLong}
+		return []byte{}, api_error.InvalidRequestError(errors.CustomError{Message: PasswordItTooLong})
 	}
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(s), bcryptCost)
 	if err != nil {
-		return []byte{}, err
+		return []byte{}, api_error.InternalError(err)
 	}
 	return hashedPassword, nil
 }
