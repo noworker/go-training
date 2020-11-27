@@ -3,7 +3,6 @@ package repository
 import (
 	"go_training/domain/model"
 	"go_training/lib/errors"
-	"go_training/web/api_error"
 )
 
 type UserRepositoryMock struct {
@@ -28,7 +27,7 @@ func (repository *UserRepositoryMock) Activate(userId model.UserId) error {
 
 func (repository *UserRepositoryMock) CreateUser(user model.User, userPassword model.UserPassword) error {
 	if user.UserId == repository.ExistingUserId {
-		return api_error.InvalidRequestError(errors.CustomError{Message: CanNotCreateExistingUserId})
+		return errors.CustomError{Message: CanNotCreateExistingUserId}
 	}
 	repository.User = user
 	repository.UserPassword = userPassword
