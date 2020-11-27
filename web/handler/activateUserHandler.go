@@ -2,22 +2,20 @@ package handler
 
 import (
 	"github.com/labstack/echo/v4"
-	"go_training/config"
 	"go_training/domain/infrainterface"
 	"go_training/domain/model"
-	"go_training/lib/jwt_lib"
 	"go_training/web/api_error"
 	"net/http"
 )
 
 type ActivateUserHandler struct {
-	conf                 config.Config
+	tokenChecker         infrainterface.ITokenChecker
 	createUserRepository infrainterface.IUserRepository
 }
 
 func (handler ActivateUserHandler) ActivateUser(c echo.Context) error {
 	token := c.QueryParam("token")
-	userId, err := jwt_lib.TokenChecker(token, handler.conf)
+	userId, err := handler.tokenChecker.CheckActivateUserToken(token)
 	if err != nil {
 		return api_error.InvalidRequestError(err)
 	}

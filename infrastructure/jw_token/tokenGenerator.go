@@ -1,9 +1,8 @@
-package jwt_lib
+package jw_token
 
 import (
 	"github.com/dgrijalva/jwt-go"
 	mdate "github.com/matsuri-tech/date-go"
-	"go_training/config"
 	"go_training/lib/errors"
 	"io/ioutil"
 	"strconv"
@@ -11,16 +10,24 @@ import (
 
 const (
 	NoFileError          errors.ErrorMessage = "no file"
-	ParsePrivateKeyError errors.ErrorMessage = "parse private key error"
+	ParsePrivateKeyError errors.ErrorMessage = "parse private privateKey error"
 	EncodeTokenError     errors.ErrorMessage = "encode token error"
 )
 
-func TokenGenerator(userId string, conf config.Config) (string, error) {
-	signBytes, err := ioutil.ReadFile(conf.App.KeyPath + "private.pem")
+type TokenGenerator struct {
+	privateKeyPath []byte
+}
+
+func NewTokenGenerator(path string) (TokenGenerator, error) {
+	signBytes, err := ioutil.ReadFile(path + "private.pem")
 	if err != nil {
-		return "", errors.CustomError{Message: NoFileError, Option: err.Error()}
+		return TokenGenerator{}, errors.CustomError{Message: NoFileError, Option: err.Error()}
 	}
-	signKey, err := jwt.ParseRSAPrivateKeyFromPEM(signBytes)
+	return TokenGenerator{privateKeyPath: signBytes}, nil
+}
+
+func (g TokenGenerator) GenerateActivateUserToken(userId string) (string, error) {
+	signKey, err := jwt.ParseRSAPrivateKeyFromPEM(g.privateKeyPath)
 	if err != nil {
 		return "", errors.CustomError{Message: ParsePrivateKeyError, Option: err.Error()}
 	}

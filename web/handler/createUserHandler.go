@@ -3,15 +3,14 @@ package handler
 import (
 	"fmt"
 	"github.com/labstack/echo/v4"
-	"go_training/config"
+	"go_training/domain/infrainterface"
 	"go_training/domain/service"
-	"go_training/lib/jwt_lib"
 	"go_training/web/api_error"
 	"net/http"
 )
 
 type CreateUserHandler struct {
-	conf              config.Config
+	tokenGenerator    infrainterface.ITokenGenerator
 	createUserService service.CreateUserService
 }
 
@@ -29,7 +28,7 @@ func (handler CreateUserHandler) CreateUser(c echo.Context) error {
 	if err := handler.createUserService.CreateUser(user.UserId, user.EmailAddress, user.Password); err != nil {
 		return api_error.InvalidRequestError(err)
 	}
-	token, err := jwt_lib.TokenGenerator(user.UserId, handler.conf)
+	token, err := handler.tokenGenerator.GenerateActivateUserToken(user.UserId)
 	if err != nil {
 		return api_error.InvalidRequestError(err)
 	}
