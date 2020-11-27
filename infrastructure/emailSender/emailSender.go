@@ -1,6 +1,7 @@
 package email
 
 import (
+	"github.com/labstack/gommon/log"
 	"go_training/domain/infrainterface"
 	"net/smtp"
 )
@@ -14,15 +15,14 @@ func NewEmailSender(address, password string) infrainterface.IEmail {
 	return Sender{emailAddress: address, password: password}
 }
 
-func (sender Sender) SendEmail(to, token string) error {
+func (sender Sender) SendEmail(to, token string) {
 	tokenURL := "http://localhost:8080/activate_user?token=" + token
 	auth := smtp.PlainAuth(sender.emailAddress, sender.emailAddress, sender.password, "smtp.gmail.com")
 
 	err := smtp.SendMail("smtp.gmail.com:587", auth, sender.emailAddress, []string{to}, messageBuilder(to, tokenURL))
 	if err != nil {
-		return err
+		log.Printf("failed to send email %v", err.Error())
 	}
-	return nil
 }
 
 func messageBuilder(to, tokenURL string) []byte {

@@ -46,10 +46,7 @@ func (service CreateUserService) SendTokenMail(userId, address string) error {
 		return api_error.InternalError(err)
 	}
 
-	err = service.EmailSender.SendEmail(address, token)
-	if err != nil {
-		return api_error.InternalError(err)
-	}
+	go service.EmailSender.SendEmail(address, token)
 
 	return nil
 }

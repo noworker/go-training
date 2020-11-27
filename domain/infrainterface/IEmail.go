@@ -1,5 +1,5 @@
 package infrainterface
 
 type IEmail interface {
-	SendEmail(to, tokenURL string) error
+	SendEmail(to, tokenURL string)
 }
