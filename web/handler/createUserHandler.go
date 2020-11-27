@@ -26,7 +26,11 @@ func (handler CreateUserHandler) CreateUser(c echo.Context) error {
 	}
 
 	if err := handler.createUserService.CreateUser(user.UserId, user.EmailAddress, user.Password); err != nil {
-		return api_error.InvalidRequestError(err)
+		return err
+	}
+
+	if err := handler.createUserService.SendTokenMail(user.UserId, user.EmailAddress); err != nil {
+		return err
 	}
 
 	return c.String(http.StatusCreated, fmt.Sprintf("User is successfully created. "))
