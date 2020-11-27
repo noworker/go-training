@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	"go_training/config"
 	"go_training/domain/model"
 	"go_training/domain/service"
+	email "go_training/infrastructure/emailSender"
+	"go_training/infrastructure/jw_token"
 	"go_training/infrastructure/repository"
 	"go_training/initializer"
 	"go_training/lib"
@@ -22,15 +23,16 @@ const existingUserId = "existing"
 
 func TestCreateUserHandlerNoErrorCase(t *testing.T) {
 	repo := repository.NewUserRepositoryMock(existingUserId)
-	createUserService := service.NewCreateUserService(repo)
-	conf := config.NewDummyConfig()
+	tokenGenerator, _ := jw_token.NewTokenGeneratorMock("aaa")
+	emailSender := email.NewEmailSenderMock("hoge", "huga")
+	createUserService := service.NewCreateUserService(repo, tokenGenerator, emailSender)
 	handlers := InitHandler(
 		initializer.Repositories{
 			UserRepository: repo,
 		},
 		initializer.Services{
 			CreateUserService: createUserService,
-		}, conf)
+		}, initializer.Infras{TokenGenerator: tokenGenerator})
 	e := NewRouter(handlers)
 	form := make(url.Values)
 
@@ -80,15 +82,16 @@ func TestCreateUserHandlerNoErrorCase(t *testing.T) {
 
 func TestCreateUserHandlerErrorCase1(t *testing.T) {
 	repo := repository.NewUserRepositoryMock(existingUserId)
-	createUserService := service.NewCreateUserService(repo)
-	conf := config.NewDummyConfig()
+	tokenGenerator, _ := jw_token.NewTokenGeneratorMock("aaa")
+	emailSender := email.NewEmailSenderMock("hoge", "huga")
+	createUserService := service.NewCreateUserService(repo, tokenGenerator, emailSender)
 	handlers := InitHandler(
 		initializer.Repositories{
 			UserRepository: repo,
 		},
 		initializer.Services{
 			CreateUserService: createUserService,
-		}, conf)
+		}, initializer.Infras{TokenGenerator: tokenGenerator})
 	e := NewRouter(handlers)
 	form := make(url.Values)
 
@@ -119,15 +122,16 @@ func TestCreateUserHandlerErrorCase1(t *testing.T) {
 
 func TestCreateUserHandlerErrorCase2(t *testing.T) {
 	repo := repository.NewUserRepositoryMock(existingUserId)
-	createUserService := service.NewCreateUserService(repo)
-	conf := config.NewDummyConfig()
+	tokenGenerator, _ := jw_token.NewTokenGeneratorMock("aaa")
+	emailSender := email.NewEmailSenderMock("hoge", "huga")
+	createUserService := service.NewCreateUserService(repo, tokenGenerator, emailSender)
 	handlers := InitHandler(
 		initializer.Repositories{
 			UserRepository: repo,
 		},
 		initializer.Services{
 			CreateUserService: createUserService,
-		}, conf)
+		}, initializer.Infras{TokenGenerator: tokenGenerator})
 	e := NewRouter(handlers)
 
 	userId := "abcde"
@@ -158,15 +162,16 @@ func TestCreateUserHandlerErrorCase2(t *testing.T) {
 
 func TestCreateUserHandlerErrorCase3(t *testing.T) {
 	repo := repository.NewUserRepositoryMock(existingUserId)
-	createUserService := service.NewCreateUserService(repo)
-	conf := config.NewDummyConfig()
+	tokenGenerator, _ := jw_token.NewTokenGeneratorMock("aaa")
+	emailSender := email.NewEmailSenderMock("hoge", "huga")
+	createUserService := service.NewCreateUserService(repo, tokenGenerator, emailSender)
 	handlers := InitHandler(
 		initializer.Repositories{
 			UserRepository: repo,
 		},
 		initializer.Services{
 			CreateUserService: createUserService,
-		}, conf)
+		}, initializer.Infras{TokenGenerator: tokenGenerator})
 	e := NewRouter(handlers)
 
 	userId := "abcde"
@@ -195,15 +200,16 @@ func TestCreateUserHandlerErrorCase3(t *testing.T) {
 
 func TestCreateUserHandlerErrorCase4(t *testing.T) {
 	repo := repository.NewUserRepositoryMock(existingUserId)
-	createUserService := service.NewCreateUserService(repo)
-	conf := config.NewDummyConfig()
+	tokenGenerator, _ := jw_token.NewTokenGeneratorMock("aaa")
+	emailSender := email.NewEmailSenderMock("hoge", "huga")
+	createUserService := service.NewCreateUserService(repo, tokenGenerator, emailSender)
 	handlers := InitHandler(
 		initializer.Repositories{
 			UserRepository: repo,
 		},
 		initializer.Services{
 			CreateUserService: createUserService,
-		}, conf)
+		}, initializer.Infras{TokenGenerator: tokenGenerator})
 	e := NewRouter(handlers)
 
 	emailAddress := "abc@example.com"
@@ -234,15 +240,16 @@ func TestCreateUserHandlerErrorCase4(t *testing.T) {
 
 func TestCreateUserHandlerErrorCase5(t *testing.T) {
 	repo := repository.NewUserRepositoryMock(existingUserId)
-	createUserService := service.NewCreateUserService(repo)
-	conf := config.NewDummyConfig()
+	tokenGenerator, _ := jw_token.NewTokenGeneratorMock("aaa")
+	emailSender := email.NewEmailSenderMock("hoge", "huga")
+	createUserService := service.NewCreateUserService(repo, tokenGenerator, emailSender)
 	handlers := InitHandler(
 		initializer.Repositories{
 			UserRepository: repo,
 		},
 		initializer.Services{
 			CreateUserService: createUserService,
-		}, conf)
+		}, initializer.Infras{TokenGenerator: tokenGenerator})
 	e := NewRouter(handlers)
 	userId := "aaa"
 	emailAddress := "abc@example.com"
@@ -273,15 +280,16 @@ func TestCreateUserHandlerErrorCase5(t *testing.T) {
 
 func TestCreateUserHandlerErrorCase6(t *testing.T) {
 	repo := repository.NewUserRepositoryMock(existingUserId)
-	createUserService := service.NewCreateUserService(repo)
-	conf := config.NewDummyConfig()
+	tokenGenerator, _ := jw_token.NewTokenGeneratorMock("aaa")
+	emailSender := email.NewEmailSenderMock("hoge", "huga")
+	createUserService := service.NewCreateUserService(repo, tokenGenerator, emailSender)
 	handlers := InitHandler(
 		initializer.Repositories{
 			UserRepository: repo,
 		},
 		initializer.Services{
 			CreateUserService: createUserService,
-		}, conf)
+		}, initializer.Infras{TokenGenerator: tokenGenerator})
 	e := NewRouter(handlers)
 
 	userId := "12345678901234567"

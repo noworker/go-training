@@ -8,11 +8,15 @@ import (
 
 type CreateUserService struct {
 	UserRepository infrainterface.IUserRepository
+	TokenGenerator infrainterface.ITokenGenerator
+	EmailSender    infrainterface.IEmail
 }
 
-func NewCreateUserService(userRepository infrainterface.IUserRepository) CreateUserService {
+func NewCreateUserService(userRepository infrainterface.IUserRepository, tokenGenerator infrainterface.ITokenGenerator, emailSender infrainterface.IEmail) CreateUserService {
 	return CreateUserService{
 		UserRepository: userRepository,
+		TokenGenerator: tokenGenerator,
+		EmailSender:    emailSender,
 	}
 }
 
@@ -32,5 +36,16 @@ func (service CreateUserService) CreateUser(userId string, address string, rawPa
 	if err := service.UserRepository.CreateUser(newUser, newUserPassword); err != nil {
 		return err
 	}
+
+	token, err := service.TokenGenerator.GenerateActivateUserToken(userId)
+	if err != nil {
+		return err
+	}
+
+	err = service.EmailSender.SendEmail(address, token)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
