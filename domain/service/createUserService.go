@@ -4,7 +4,6 @@ import (
 	"go_training/domain/infrainterface"
 	"go_training/domain/model"
 	"go_training/lib"
-	"go_training/web/api_error"
 )
 
 type CreateUserService struct {
@@ -24,7 +23,7 @@ func NewCreateUserService(userRepository infrainterface.IUserRepository, tokenGe
 func (service CreateUserService) CreateUser(userId string, address string, rawPassword string) error {
 	newUser, err := model.NewUser(userId, address)
 	if err != nil {
-		return api_error.InvalidRequestError(err)
+		return err
 	}
 
 	password, err := lib.MakeHashedStringFromPassword(rawPassword)
@@ -35,20 +34,17 @@ func (service CreateUserService) CreateUser(userId string, address string, rawPa
 	newUserPassword := model.NewUserPassword(newUser.UserId, password)
 
 	if err := service.UserRepository.CreateUser(newUser, newUserPassword); err != nil {
-		return api_error.InternalError(err)
+		return err
 	}
-	return nil
-}
 
-func (service CreateUserService) SendTokenMail(userId, address string) error {
 	token, err := service.TokenGenerator.GenerateActivateUserToken(userId)
 	if err != nil {
-		return api_error.InternalError(err)
+		return err
 	}
 
 	err = service.EmailSender.SendEmail(address, token)
 	if err != nil {
-		return api_error.InternalError(err)
+		return err
 	}
 
 	return nil
