@@ -20,12 +20,15 @@ type User struct {
 
 func (handler CreateUserHandler) CreateUser(c echo.Context) error {
 	user := new(User)
+
 	if err := c.Bind(user); err != nil {
 		return api_error.InvalidRequestError(err)
 	}
+
 	if err := handler.createUserService.CreateUser(user.UserId, user.EmailAddress, user.Password); err != nil {
 		return api_error.InvalidRequestError(err)
 	}
+
 	token, err := handler.createUserService.TokenGenerator.GenerateActivateUserToken(user.UserId)
 	if err != nil {
 		return api_error.InternalError(err)
@@ -35,5 +38,6 @@ func (handler CreateUserHandler) CreateUser(c echo.Context) error {
 	if err != nil {
 		return api_error.InternalError(err)
 	}
+
 	return c.String(http.StatusCreated, fmt.Sprintf("User is successfully created. \ntoken: %s", token))
 }

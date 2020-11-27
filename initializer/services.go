@@ -12,6 +12,8 @@ type Services struct {
 func InitServices(repositories Repositories, infras Infras) Services {
 	createUserService := service.CreateUserService{
 		UserRepository: repositories.UserRepository,
+		TokenGenerator: infras.TokenGenerator,
+		EmailSender:    infras.EmailSender,
 	}
 	activateUserService := service.ActivateUserService{
 		UserRepository: repositories.UserRepository,
