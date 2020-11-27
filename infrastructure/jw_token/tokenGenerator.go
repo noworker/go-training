@@ -3,6 +3,7 @@ package jw_token
 import (
 	"github.com/dgrijalva/jwt-go"
 	mdate "github.com/matsuri-tech/date-go"
+	"go_training/domain/model"
 	"go_training/lib/errors"
 	"io/ioutil"
 	"strconv"
@@ -26,7 +27,7 @@ func NewTokenGenerator(path string) (TokenGenerator, error) {
 	return TokenGenerator{privateKeyPath: signBytes}, nil
 }
 
-func (g TokenGenerator) GenerateActivateUserToken(userId string) (string, error) {
+func (g TokenGenerator) GenerateActivateUserToken(userId model.UserId) (model.Token, error) {
 	signKey, err := jwt.ParseRSAPrivateKeyFromPEM(g.privateKeyPath)
 	if err != nil {
 		return "", errors.CustomError{Message: ParsePrivateKeyError, Option: err.Error()}
@@ -42,5 +43,5 @@ func (g TokenGenerator) GenerateActivateUserToken(userId string) (string, error)
 		return "", errors.CustomError{Message: EncodeTokenError, Option: err.Error()}
 	}
 
-	return tokenString, nil
+	return model.Token(tokenString), nil
 }

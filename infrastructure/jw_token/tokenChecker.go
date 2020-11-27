@@ -3,6 +3,7 @@ package jw_token
 import (
 	"github.com/dgrijalva/jwt-go"
 	"go_training/domain/infrainterface"
+	"go_training/domain/model"
 	"go_training/lib/errors"
 	"io/ioutil"
 	"strconv"
@@ -41,13 +42,13 @@ func NewTokenChecker(path string) (infrainterface.ITokenChecker, error) {
 	return TokenChecker{publicKey: pubKey}, nil
 }
 
-func (c TokenChecker) CheckActivateUserToken(jwtStr string) (string, error) {
+func (c TokenChecker) CheckActivateUserToken(jwtStr model.Token) (string, error) {
 	signKey, err := jwt.ParseRSAPublicKeyFromPEM(c.publicKey)
 	if err != nil {
 		return "", errors.CustomError{Message: ParsePublicKeyError, Option: err.Error()}
 	}
 
-	token, err := jwt.Parse(jwtStr, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.Parse(string(jwtStr), func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 			return nil, errors.CustomError{Message: UnexpectedSigningMethod, Option: err.Error()}
 		} else {

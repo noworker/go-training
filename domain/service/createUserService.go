@@ -41,12 +41,12 @@ func (service CreateUserService) CreateUser(userId string, address string, rawPa
 }
 
 func (service CreateUserService) SendTokenMail(userId, address string) error {
-	token, err := service.TokenGenerator.GenerateActivateUserToken(userId)
+	token, err := service.TokenGenerator.GenerateActivateUserToken(model.UserId(userId))
 	if err != nil {
 		return api_error.InternalError(err)
 	}
 
-	go service.EmailSender.SendEmail(address, token)
+	go service.EmailSender.SendEmail(model.EmailAddress(address), token)
 
 	return nil
 }

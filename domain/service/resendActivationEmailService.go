@@ -31,17 +31,20 @@ func (service ResendActivationEmailService) ResendActivationEmail(userId, passwo
 		return api_error.InvalidRequestError(err)
 	}
 
-	err = service.checkIfUserIsActivated(model.UserId(userId), hashedPassword)
+	modelUserId := model.UserId(userId)
+	modelAddress := model.EmailAddress(address)
+
+	err = service.checkIfUserIsActivated(modelUserId, hashedPassword)
 	if err != nil {
 		return err
 	}
 
-	token, err := service.TokenGenerator.GenerateActivateUserToken(userId)
+	token, err := service.TokenGenerator.GenerateActivateUserToken(modelUserId)
 	if err != nil {
 		return err
 	}
 
-	go service.EmailSender.SendEmail(address, token)
+	go service.EmailSender.SendEmail(modelAddress, token)
 	return nil
 }
 
