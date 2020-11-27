@@ -32,21 +32,19 @@ func (service CreateUserService) CreateUser(userId string, address string, rawPa
 		return err
 	}
 
-	newUserPassword := model.NewUserPassword(newUser.UserId, password)
-
-	if err := service.UserRepository.CreateUser(newUser, newUserPassword); err != nil {
-		return api_error.InternalError(err)
+	if err := service.UserRepository.CreateNewUser(newUser, rawPassword, password); err != nil {
+		return err
 	}
 	return nil
 }
 
 func (service CreateUserService) SendTokenMail(userId, address string) error {
-	token, err := service.TokenGenerator.GenerateActivateUserToken(userId)
+	token, err := service.TokenGenerator.GenerateActivateUserToken(model.UserId(userId))
 	if err != nil {
 		return api_error.InternalError(err)
 	}
 
-	go service.EmailSender.SendEmail(address, token)
+	go service.EmailSender.SendEmail(model.EmailAddress(address), token)
 
 	return nil
 }

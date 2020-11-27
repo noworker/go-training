@@ -1,5 +1,7 @@
 package infrainterface
 
+import "go_training/domain/model"
+
 type ITokenChecker interface {
-	CheckActivateUserToken(jwtStr string) (string, error)
+	CheckActivateUserToken(jwtStr model.Token) (model.UserId, error)
 }

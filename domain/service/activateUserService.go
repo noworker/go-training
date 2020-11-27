@@ -14,12 +14,12 @@ func NewActivateUserService(checker infrainterface.ITokenChecker, repository inf
 	return ActivateUserService{TokenChecker: checker, UserRepository: repository}
 }
 
-func (service ActivateUserService) ActivateUser(token string) error {
+func (service ActivateUserService) ActivateUser(token model.Token) error {
 	userId, err := service.TokenChecker.CheckActivateUserToken(token)
 	if err != nil {
 		return err
 	}
-	if err := service.UserRepository.Activate(model.UserId(userId)); err != nil {
+	if err := service.UserRepository.Activate(userId); err != nil {
 		return err
 	}
 	return nil

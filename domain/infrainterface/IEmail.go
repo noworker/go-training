@@ -1,5 +1,7 @@
 package infrainterface
 
+import "go_training/domain/model"
+
 type IEmail interface {
-	SendEmail(to, tokenURL string)
+	SendEmail(address model.EmailAddress, token model.Token)
 }
