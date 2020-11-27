@@ -28,12 +28,12 @@ func (repository *UserRepositoryMock) Activate(userId model.UserId) error {
 	return nil
 }
 
-func (repository *UserRepositoryMock) CreateNewUser(user model.User, userPassword model.UserPassword) error {
+func (repository *UserRepositoryMock) CreateNewUser(user model.User, rawPassword string, hashedPassword lib.HashedByteString) error {
 	if user.UserId == repository.ExistingUserId {
 		return api_error.InvalidRequestError(errors.CustomError{Message: CanNotCreateExistingUserId})
 	}
 	repository.User = user
-	repository.UserPassword = userPassword
+	repository.UserPassword = model.UserPassword{Password: hashedPassword, UserId: user.UserId}
 	return nil
 }
 
@@ -41,6 +41,6 @@ func (repository UserRepositoryMock) UserExists(userId model.UserId, password li
 	return true
 }
 
-func (repository UserRepositoryMock) GetUserByIdAndPassword(userId model.UserId, password lib.HashedByteString) (table.User, error) {
+func (repository UserRepositoryMock) GetUserByIdAndPassword(userId model.UserId, password string) (table.User, error) {
 	return table.User{}, nil
 }
