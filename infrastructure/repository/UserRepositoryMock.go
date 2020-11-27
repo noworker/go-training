@@ -2,6 +2,8 @@ package repository
 
 import (
 	"go_training/domain/model"
+	"go_training/infrastructure/table"
+	"go_training/lib"
 	"go_training/lib/errors"
 	"go_training/web/api_error"
 )
@@ -33,4 +35,12 @@ func (repository *UserRepositoryMock) CreateNewUser(user model.User, userPasswor
 	repository.User = user
 	repository.UserPassword = userPassword
 	return nil
+}
+
+func (repository UserRepositoryMock) UserExists(userId model.UserId, password lib.HashedByteString) bool {
+	return true
+}
+
+func (repository UserRepositoryMock) GetUserByIdAndPassword(userId model.UserId, password lib.HashedByteString) (table.User, error) {
+	return table.User{}, nil
 }

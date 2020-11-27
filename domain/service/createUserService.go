@@ -35,7 +35,7 @@ func (service CreateUserService) CreateUser(userId string, address string, rawPa
 	newUserPassword := model.NewUserPassword(newUser.UserId, password)
 
 	if err := service.UserRepository.CreateNewUser(newUser, newUserPassword); err != nil {
-		return api_error.InternalError(err)
+		return err
 	}
 	return nil
 }
