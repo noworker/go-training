@@ -15,7 +15,7 @@ const apiPrefix = "/api"
 func InitServer(conf config.Config, db *gorm.DB) Handlers {
 	infras := initializer.InitInfras(conf)
 	repositories := initializer.InitRepositories(db)
-	services := initializer.InitServices(repositories)
+	services := initializer.InitServices(repositories, infras)
 	handlers := InitHandler(repositories, services, infras)
 	e := NewRouter(handlers)
 	e.Logger.Fatal(e.Start(":8080"))

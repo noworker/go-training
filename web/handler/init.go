@@ -15,8 +15,7 @@ func InitHandler(repositories initializer.Repositories, services initializer.Ser
 	}
 
 	activateUserHandler := ActivateUserHandler{
-		tokenChecker:         infras.TokenChecker,
-		createUserRepository: repositories.UserRepository,
+		activateUserService: services.ActivateUserService,
 	}
 
 	handlers := Handlers{

@@ -5,14 +5,20 @@ import (
 )
 
 type Services struct {
-	CreateUserService service.CreateUserService
+	CreateUserService   service.CreateUserService
+	ActivateUserService service.ActivateUserService
 }
 
-func InitServices(repositories Repositories) Services {
+func InitServices(repositories Repositories, infras Infras) Services {
 	createUserService := service.CreateUserService{
 		UserRepository: repositories.UserRepository,
 	}
+	activateUserService := service.ActivateUserService{
+		UserRepository: repositories.UserRepository,
+		TokenChecker:   infras.TokenChecker,
+	}
 	return Services{
-		CreateUserService: createUserService,
+		CreateUserService:   createUserService,
+		ActivateUserService: activateUserService,
 	}
 }
