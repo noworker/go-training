@@ -29,7 +29,7 @@ func (handler CreateUserHandler) CreateUser(c echo.Context) error {
 	if err := handler.createUserService.CreateUser(user.UserId, user.EmailAddress, user.Password); err != nil {
 		return api_error.InvalidRequestError(err)
 	}
-	token, err := jw_token.TokenGenerator(user.UserId, handler.conf)
+	token, err := jw_token.Generate(user.UserId, handler.conf)
 	if err != nil {
 		return api_error.InvalidRequestError(err)
 	}
