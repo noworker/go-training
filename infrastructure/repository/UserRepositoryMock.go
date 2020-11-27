@@ -9,14 +9,18 @@ import (
 )
 
 type UserRepositoryMock struct {
-	ExistingUserId model.UserId
-	User           model.User
-	UserPassword   model.UserPassword
+	UserId       model.UserId
+	Password     string
+	EmailAddress model.EmailAddress
+	User         model.User
+	UserPassword model.UserPassword
 }
 
-func NewUserRepositoryMock(existingUserId string) *UserRepositoryMock {
+func NewUserRepositoryMock(userId, password, address string) *UserRepositoryMock {
 	return &UserRepositoryMock{
-		ExistingUserId: model.UserId(existingUserId),
+		UserId:       model.UserId(userId),
+		Password:     password,
+		EmailAddress: model.EmailAddress(address),
 	}
 }
 
@@ -29,7 +33,7 @@ func (repository *UserRepositoryMock) Activate(userId model.UserId) error {
 }
 
 func (repository *UserRepositoryMock) CreateNewUser(user model.User, rawPassword string, hashedPassword lib.HashedByteString) error {
-	if user.UserId == repository.ExistingUserId {
+	if user.UserId == repository.UserId {
 		return api_error.InvalidRequestError(errors.CustomError{Message: CanNotCreateExistingUserId})
 	}
 	repository.User = user
@@ -42,5 +46,8 @@ func (repository UserRepositoryMock) UserExists(userId model.UserId, password li
 }
 
 func (repository UserRepositoryMock) GetUserByIdAndPassword(userId model.UserId, password string) (table.User, error) {
+	if userId != repository.UserId || password != repository.Password {
+		return table.User{}, errors.CustomError{Message: UserNotFoundError}
+	}
 	return table.User{}, nil
 }
