@@ -25,7 +25,7 @@ func (repository *UserRepositoryMock) Activate(userId model.UserId) error {
 	return nil
 }
 
-func (repository *UserRepositoryMock) CreateUnactivatedNewUser(user model.User, userPassword model.UserPassword) error {
+func (repository *UserRepositoryMock) CreateUser(user model.User, userPassword model.UserPassword) error {
 	if user.UserId == repository.ExistingUserId {
 		return errors.CustomError{Message: CanNotCreateExistingUserId}
 	}

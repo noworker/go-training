@@ -8,5 +8,5 @@ type IUserRepository interface {
 	Activate(userId model.UserId) error
 	//CheckIfActivated(userId model.UserId, password lib.HashStringPassword) (bool, error)
 	//GetUserByIdAndPassword(userId model.UserId, password lib.HashStringPassword) (table.User, error)
-	CreateUnactivatedNewUser(user model.User, userPassword model.UserPassword) error
+	CreateUser(user model.User, userPassword model.UserPassword) error
 }

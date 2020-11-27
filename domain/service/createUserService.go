@@ -29,7 +29,7 @@ func (service CreateUserService) CreateUser(userId string, address string, rawPa
 
 	newUserPassword := model.NewUserPassword(newUser.UserId, password)
 
-	if err := service.UserRepository.CreateUnactivatedNewUser(newUser, newUserPassword); err != nil {
+	if err := service.UserRepository.CreateUser(newUser, newUserPassword); err != nil {
 		return err
 	}
 	return nil
