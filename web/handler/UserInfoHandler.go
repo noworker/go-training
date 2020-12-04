@@ -4,8 +4,13 @@ import (
 	"github.com/labstack/echo/v4"
 	"go_training/domain/infrainterface"
 	"go_training/domain/model"
+	"go_training/lib/errors"
 	"go_training/web/api_error"
 	"net/http"
+)
+
+const (
+	UserIsNotActivated errors.ErrorMessage = "user_is_not_activated"
 )
 
 type UserToken struct {
@@ -24,22 +29,21 @@ type UserInfoHandler struct {
 }
 
 func (handler UserInfoHandler) GetUserInfo(c echo.Context) error {
-	userToken := new(UserToken)
-	if err := c.Bind(userToken); err != nil {
-		return api_error.InvalidRequestError(err)
-	}
-
-	if err := handler.userRepository.CheckIfUserIsActivated(model.UserId(userToken.UserId)); err != nil {
+	userId := c.QueryParam("user_id")
+	token := c.QueryParam("token")
+	if _, err := handler.tokenChecker.CheckLoginUserToken(model.Token(token)); err != nil {
 		return err
 	}
 
-	if _, err := handler.tokenChecker.CheckLoginUserToken(model.Token(userToken.Token)); err != nil {
-		return err
-	}
-
-	user, err := handler.userRepository.GetUserById(model.UserId(userToken.UserId))
+	user, err := handler.userRepository.GetUserById(model.UserId(userId))
 	if err != nil {
 		return err
+	}
+
+	if !user.Activated {
+		return api_error.InvalidRequestError(errors.CustomError{
+			Message: UserIsNotActivated,
+		})
 	}
 
 	return c.JSON(http.StatusOK, UserInfo{

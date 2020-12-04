@@ -96,7 +96,7 @@ func (repository userRepository) GetUserById(userId model.UserId) (model.User, e
 
 	result := repository.DB.Where(conn).First(&user)
 	if result.RecordNotFound() {
-		return model.User{}, errors.CustomError{Message: UserNotFoundError}
+		return model.User{}, api_error.NotFoundError(errors.CustomError{Message: UserNotFoundError})
 	}
 
 	if err := result.Error; err != nil {
