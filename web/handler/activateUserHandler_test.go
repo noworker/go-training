@@ -14,9 +14,9 @@ import (
 	"testing"
 )
 
-func initActivateUserHandlerMock(tokenCheckerUserId, repositoryUserId, token string) Handlers {
+func initActivateUserHandlerMock(tokenCheckerUserId, repositoryUserId, token string, activated bool) Handlers {
 	tokenChecker, _ := jw_token.NewTokenCheckerMock(model.UserId(tokenCheckerUserId), token)
-	repo := repository.NewUserRepositoryMock(repositoryUserId, "password", "aaa@example.com")
+	repo := repository.NewUserRepositoryMock(repositoryUserId, "password", "aaa@example.com", activated)
 	activateUserService := service.NewActivateUserService(tokenChecker, repo)
 	return InitHandler(
 		initializer.Repositories{},
@@ -27,7 +27,7 @@ func initActivateUserHandlerMock(tokenCheckerUserId, repositoryUserId, token str
 }
 
 func ActivateUserHandlerTester(repoMockUserId, tokenMockUserId, token, mockToken string) httptest.ResponseRecorder {
-	handlers := initActivateUserHandlerMock(repoMockUserId, tokenMockUserId, mockToken)
+	handlers := initActivateUserHandlerMock(repoMockUserId, tokenMockUserId, mockToken, false)
 	e := NewRouter(handlers)
 	q := make(url.Values)
 

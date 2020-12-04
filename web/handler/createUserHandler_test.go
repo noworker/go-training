@@ -36,7 +36,7 @@ func initCreateHandlerMock(repo infrainterface.IUserRepository) Handlers {
 }
 
 func TestCreateUserHandlerNoErrorCase(t *testing.T) {
-	repo := repository.NewUserRepositoryMock(existingUserId, "aaa", "aaa")
+	repo := repository.NewUserRepositoryMock(existingUserId, "aaa", "aaa", false)
 	handlers := initCreateHandlerMock(repo)
 	e := NewRouter(handlers)
 	form := make(url.Values)
@@ -85,7 +85,7 @@ func TestCreateUserHandlerNoErrorCase(t *testing.T) {
 }
 
 func TestCreateUserHandlerErrorCase1(t *testing.T) {
-	repo := repository.NewUserRepositoryMock(existingUserId, "aaa", "aaa")
+	repo := repository.NewUserRepositoryMock(existingUserId, "aaa", "aaa", false)
 	handlers := initCreateHandlerMock(repo)
 	e := NewRouter(handlers)
 	form := make(url.Values)
@@ -116,7 +116,7 @@ func TestCreateUserHandlerErrorCase1(t *testing.T) {
 }
 
 func TestCreateUserHandlerErrorCase2(t *testing.T) {
-	repo := repository.NewUserRepositoryMock(existingUserId, "aaa", "aaa")
+	repo := repository.NewUserRepositoryMock(existingUserId, "aaa", "aaa", false)
 	handlers := initCreateHandlerMock(repo)
 	e := NewRouter(handlers)
 
@@ -147,7 +147,7 @@ func TestCreateUserHandlerErrorCase2(t *testing.T) {
 }
 
 func TestCreateUserHandlerErrorCase3(t *testing.T) {
-	repo := repository.NewUserRepositoryMock(existingUserId, "aaa", "aaa")
+	repo := repository.NewUserRepositoryMock(existingUserId, "aaa", "aaa", false)
 	handlers := initCreateHandlerMock(repo)
 	e := NewRouter(handlers)
 
@@ -176,7 +176,7 @@ func TestCreateUserHandlerErrorCase3(t *testing.T) {
 }
 
 func TestCreateUserHandlerErrorCase4(t *testing.T) {
-	repo := repository.NewUserRepositoryMock(existingUserId, "aaa", "aaa")
+	repo := repository.NewUserRepositoryMock(existingUserId, "aaa", "aaa", false)
 	handlers := initCreateHandlerMock(repo)
 	e := NewRouter(handlers)
 
@@ -207,7 +207,7 @@ func TestCreateUserHandlerErrorCase4(t *testing.T) {
 }
 
 func TestCreateUserHandlerErrorCase5(t *testing.T) {
-	repo := repository.NewUserRepositoryMock(existingUserId, "aaa", "aaa")
+	repo := repository.NewUserRepositoryMock(existingUserId, "aaa", "aaa", false)
 	handlers := initCreateHandlerMock(repo)
 	e := NewRouter(handlers)
 	userId := "aaa"
@@ -238,7 +238,7 @@ func TestCreateUserHandlerErrorCase5(t *testing.T) {
 }
 
 func TestCreateUserHandlerErrorCase6(t *testing.T) {
-	repo := repository.NewUserRepositoryMock(existingUserId, "aaa", "aaa")
+	repo := repository.NewUserRepositoryMock(existingUserId, "aaa", "aaa", false)
 	handlers := initCreateHandlerMock(repo)
 	e := NewRouter(handlers)
 
