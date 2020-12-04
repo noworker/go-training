@@ -52,3 +52,7 @@ func (repository UserRepositoryMock) GetUserByIdAndPassword(userId model.UserId,
 	}
 	return model.User{}, nil
 }
+
+func (repository UserRepositoryMock) CheckIfUserIsActivated(userId model.UserId) error {
+	return nil
+}

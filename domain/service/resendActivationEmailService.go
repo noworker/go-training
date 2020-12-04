@@ -25,8 +25,11 @@ func NewResendActivationEmailService(userRepository infrainterface.IUserReposito
 }
 
 func (service ResendActivationEmailService) ResendActivationEmail(userId model.UserId, password string, address model.EmailAddress) error {
-	err := service.checkIfUserIsActivated(userId, password)
-	if err != nil {
+	if _, err := service.UserRepository.GetUserByIdAndPassword(userId, password); err != nil {
+		return err
+	}
+
+	if err := service.UserRepository.CheckIfUserIsActivated(userId); err != nil {
 		return err
 	}
 
@@ -36,18 +39,5 @@ func (service ResendActivationEmailService) ResendActivationEmail(userId model.U
 	}
 
 	go service.EmailSender.SendEmail(address, token)
-	return nil
-}
-
-func (service ResendActivationEmailService) checkIfUserIsActivated(userId model.UserId, password string) error {
-	user, err := service.UserRepository.GetUserByIdAndPassword(userId, password)
-	if err != nil {
-		return api_error.InvalidRequestError(err)
-	}
-
-	if user.Activated {
-		return api_error.InvalidRequestError(errors.CustomError{Message: UserIsAlreadyActivatedError})
-	}
-
 	return nil
 }

@@ -13,9 +13,10 @@ import (
 )
 
 const (
-	CanNotCreateExistingUserId errors.ErrorMessage = "can_not_create_existing_user_id"
-	UserNotFoundError          errors.ErrorMessage = "user not found"
-	InvalidPassword            errors.ErrorMessage = "invalid password"
+	CanNotCreateExistingUserId  errors.ErrorMessage = "can_not_create_existing_user_id"
+	UserNotFoundError           errors.ErrorMessage = "user not found"
+	InvalidPassword             errors.ErrorMessage = "invalid password"
+	UserIsAlreadyActivatedError errors.ErrorMessage = "user_is_already_activated_error"
 )
 
 const activationTokenLifeTime = time.Hour
@@ -141,5 +142,27 @@ func (repository userRepository) createUserPassword(userId model.UserId, passwor
 	if err := result.Error; err != nil {
 		return err
 	}
+	return nil
+}
+
+func (repository userRepository) CheckIfUserIsActivated(userId model.UserId) error {
+	user := table.User{}
+	conn := map[string]interface{}{
+		"user_id": userId,
+	}
+
+	result := repository.DB.Where(conn).First(&user)
+	if result.RecordNotFound() {
+		return api_error.InvalidRequestError(errors.CustomError{Message: UserNotFoundError})
+	}
+
+	if result.Error != nil {
+		return api_error.InternalError(result.Error)
+	}
+
+	if user.Activated {
+		return api_error.InvalidRequestError(errors.CustomError{Message: UserIsAlreadyActivatedError})
+	}
+
 	return nil
 }
