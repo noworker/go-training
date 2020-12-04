@@ -13,9 +13,10 @@ import (
 )
 
 const (
-	CanNotCreateExistingUserId errors.ErrorMessage = "can_not_create_existing_user_id"
-	UserNotFoundError          errors.ErrorMessage = "user not found"
-	InvalidPassword            errors.ErrorMessage = "invalid password"
+	CanNotCreateExistingUserId  errors.ErrorMessage = "can_not_create_existing_user_id"
+	UserNotFoundError           errors.ErrorMessage = "user not found"
+	InvalidPassword             errors.ErrorMessage = "invalid password"
+	UserIsAlreadyActivatedError errors.ErrorMessage = "user_is_already_activated_error"
 )
 
 const activationTokenLifeTime = time.Hour
@@ -34,9 +35,17 @@ func (repository userRepository) Activate(userId model.UserId) error {
 	conn := map[string]interface{}{
 		"user_id": userId,
 	}
-	result := repository.DB.Model(&table.User{}).Where(conn).Update("activated", true)
+
+	user := &table.User{}
+
+	result := repository.DB.Where(conn).First(&user)
+	if result.RecordNotFound() {
+		return api_error.InvalidRequestError(errors.CustomError{Message: UserNotFoundError, Option: result.Error.Error()})
+	}
+
+	repository.DB.Model(&table.User{}).Where(conn).Update("activated", true)
 	if err := result.Error; err != nil {
-		return err
+		return api_error.InternalError(err)
 	}
 
 	return nil
@@ -63,18 +72,17 @@ func (repository userRepository) getUserPassword(userId model.UserId, password s
 		"user_id": userId,
 	}
 
-	result := repository.DB.Where(conn).Find(&userPassword)
-	if err := result.Error; err != nil {
-		return errors.CustomError{Message: UserNotFoundError,
-			Option: "UserRepository:66"}
+	result := repository.DB.Where(conn).First(&userPassword)
+	if result.RecordNotFound() {
+		return api_error.InvalidRequestError(errors.CustomError{Message: UserNotFoundError, Option: result.Error.Error()})
 	}
 
-	if result.RecordNotFound() {
-		return errors.CustomError{Message: UserNotFoundError}
+	if err := result.Error; err != nil {
+		return api_error.InternalError(result.Error)
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(userPassword.Password), []byte(password)); err != nil {
-		return errors.CustomError{Message: InvalidPassword}
+		return api_error.InvalidRequestError(errors.CustomError{Message: InvalidPassword, Option: result.Error.Error()})
 	}
 
 	return nil
@@ -91,13 +99,12 @@ func (repository userRepository) GetUserByIdAndPassword(userId model.UserId, pas
 	}
 
 	result := repository.DB.Where(conn).First(&user)
-	if err := result.Error; err != nil {
-		return model.User{}, errors.CustomError{Message: UserNotFoundError,
-			Option: "UserRepository:80"}
-	}
-
 	if result.RecordNotFound() {
 		return model.User{}, errors.CustomError{Message: UserNotFoundError}
+	}
+
+	if err := result.Error; err != nil {
+		return model.User{}, api_error.InternalError(result.Error)
 	}
 
 	return user.MapToModel(), nil
@@ -135,5 +142,27 @@ func (repository userRepository) createUserPassword(userId model.UserId, passwor
 	if err := result.Error; err != nil {
 		return err
 	}
+	return nil
+}
+
+func (repository userRepository) CheckIfUserIsActivated(userId model.UserId) error {
+	user := table.User{}
+	conn := map[string]interface{}{
+		"user_id": userId,
+	}
+
+	result := repository.DB.Where(conn).First(&user)
+	if result.RecordNotFound() {
+		return api_error.InvalidRequestError(errors.CustomError{Message: UserNotFoundError})
+	}
+
+	if result.Error != nil {
+		return api_error.InternalError(result.Error)
+	}
+
+	if user.Activated {
+		return api_error.InvalidRequestError(errors.CustomError{Message: UserIsAlreadyActivatedError})
+	}
+
 	return nil
 }
