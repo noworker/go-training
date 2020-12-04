@@ -53,11 +53,14 @@ func (repository UserRepositoryMock) UserExists(userId model.UserId, password li
 
 func (repository UserRepositoryMock) GetUserByIdAndPassword(userId model.UserId, password string) (model.User, error) {
 	if userId != repository.UserId || password != repository.Password {
-		return model.User{}, errors.CustomError{Message: UserNotFoundError}
+		return model.User{}, api_error.InvalidRequestError(errors.CustomError{Message: UserNotFoundError})
 	}
 	return model.User{Activated: repository.Activated}, nil
 }
 
 func (repository UserRepositoryMock) CheckIfUserIsActivated(userId model.UserId) error {
+	if repository.Activated {
+		return api_error.InvalidRequestError(errors.CustomError{Message: UserIsAlreadyActivatedError})
+	}
 	return nil
 }

@@ -27,5 +27,5 @@ func (handler ResendActivationEmailHandler) ResendActivationEmail(c echo.Context
 		return err
 	}
 
-	return c.String(http.StatusCreated, "email is successfully sent.")
+	return c.String(http.StatusOK, "email is successfully sent.")
 }
