@@ -12,3 +12,7 @@ func NewTokenGeneratorMock(path string) (TokenGeneratorMock, error) {
 func (g TokenGeneratorMock) GenerateActivateUserToken(userId model.UserId) (model.Token, error) {
 	return "token", nil
 }
+
+func (g TokenGeneratorMock) GenerateLoginUserToken(userId model.UserId) (model.Token, error) {
+	return "token", nil
+}

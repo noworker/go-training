@@ -22,3 +22,10 @@ func (c TokenCheckerMock) CheckActivateUserToken(jwtStr model.Token) (model.User
 	}
 	return c.UserId, nil
 }
+
+func (c TokenCheckerMock) CheckLoginUserToken(jwtStr model.Token) (model.UserId, error) {
+	if c.Token != jwtStr {
+		return "", api_error.InvalidRequestError(errors.CustomError{Message: InvalidTokenFormat, Option: "failed to get user_id from token"})
+	}
+	return c.UserId, nil
+}
