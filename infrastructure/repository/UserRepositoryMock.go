@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"go_training/domain/model"
 	"go_training/lib"
 	"go_training/lib/errors"
@@ -24,8 +25,8 @@ func NewUserRepositoryMock(userId, password, address string) *UserRepositoryMock
 }
 
 func (repository *UserRepositoryMock) Activate(userId model.UserId) error {
-	if repository.User.UserId != userId {
-		panic("userId or password does not match")
+	if repository.UserId != userId {
+		panic(fmt.Sprintf("userId or password does not match: %v != %v", repository.User.UserId, userId))
 	}
 	repository.User.Activated = true
 	return nil

@@ -14,11 +14,10 @@ type ActivateUserHandler struct {
 
 func (handler ActivateUserHandler) ActivateUser(c echo.Context) error {
 	token := c.QueryParam("token")
-
 	err := handler.activateUserService.ActivateUser(model.Token(token))
 	if err != nil {
 		return api_error.InternalError(err)
 	}
 
-	return c.String(http.StatusCreated, "User is successfully Activated.")
+	return c.String(http.StatusOK, "User is successfully Activated.")
 }
