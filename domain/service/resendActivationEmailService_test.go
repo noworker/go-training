@@ -9,7 +9,7 @@ import (
 )
 
 func initResendService(userId, password, address string) ResendActivationEmailService {
-	userRepository := repository.NewUserRepositoryMock(userId, password, address)
+	userRepository := repository.NewUserRepositoryMock(userId, password, address, false)
 	tokenGenerator, err := jw_token.NewTokenGeneratorMock("path")
 	if err != nil {
 		panic(err)

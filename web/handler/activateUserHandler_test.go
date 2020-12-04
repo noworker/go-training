@@ -41,6 +41,21 @@ func ActivateUserHandlerTester(repoMockUserId, tokenMockUserId, token, mockToken
 	return *rec
 }
 
+func ActivateUserHandlerTesterTheCaseAlreadyActivatedUser(repoMockUserId, tokenMockUserId, token, mockToken string) httptest.ResponseRecorder {
+	handlers := initActivateUserHandlerMock(repoMockUserId, tokenMockUserId, mockToken, true)
+	e := NewRouter(handlers)
+	q := make(url.Values)
+
+	q.Set("token", token)
+
+	req := httptest.NewRequest(http.MethodGet, "/api/activate_user"+"?"+q.Encode(), nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationForm)
+	rec := httptest.NewRecorder()
+
+	e.ServeHTTP(rec, req)
+	return *rec
+}
+
 func TestActivateUserHandler_ActivateUser(t *testing.T) {
 	rec := ActivateUserHandlerTester("userId", "userId", "token", "token")
 	if !assert.Equal(t, http.StatusOK, rec.Code) {
@@ -53,6 +68,11 @@ func TestActivateUserHandler_ActivateUser(t *testing.T) {
 	}
 
 	rec = ActivateUserHandlerTester("userId", "userId", "token", "hoge")
+	if !assert.Equal(t, http.StatusBadRequest, rec.Code) {
+		t.Error(rec)
+	}
+
+	rec = ActivateUserHandlerTesterTheCaseAlreadyActivatedUser("userId", "userId", "token", "token")
 	if !assert.Equal(t, http.StatusBadRequest, rec.Code) {
 		t.Error(rec)
 	}

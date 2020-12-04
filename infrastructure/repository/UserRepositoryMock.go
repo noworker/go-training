@@ -26,6 +26,9 @@ func NewUserRepositoryMock(userId, password, address string, activated bool) *Us
 }
 
 func (repository *UserRepositoryMock) Activate(userId model.UserId) error {
+	if repository.Activated {
+		return api_error.InvalidRequestError(errors.CustomError{Message: UserIsAlreadyActivatedError})
+	}
 	if repository.UserId != userId {
 		return api_error.InvalidRequestError(errors.CustomError{Message: UserNotFoundError})
 	}
