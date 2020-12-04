@@ -9,6 +9,10 @@ func InvalidRequestError(err error) *echo.HTTPError {
 	return &echo.HTTPError{Code: 400, Message: err.Error()}
 }
 
+func NotFoundError(err error) *echo.HTTPError {
+	return &echo.HTTPError{Code: 404, Message: err.Error()}
+}
+
 func InternalError(err error) *echo.HTTPError {
 	return &echo.HTTPError{Code: 500, Message: err.Error()}
 }
