@@ -51,4 +51,9 @@ func TestActivateUserHandler_ActivateUser(t *testing.T) {
 	if !assert.Equal(t, http.StatusBadRequest, rec.Code) {
 		t.Error(rec)
 	}
+
+	rec = ActivateUserHandlerTester("userId", "userId", "token", "hoge")
+	if !assert.Equal(t, http.StatusBadRequest, rec.Code) {
+		t.Error(rec)
+	}
 }

@@ -5,6 +5,7 @@ import (
 	"go_training/domain/infrainterface"
 	"go_training/domain/model"
 	"go_training/lib/errors"
+	"go_training/web/api_error"
 	"io/ioutil"
 	"strconv"
 	"time"
@@ -45,39 +46,39 @@ func NewTokenChecker(path string) (infrainterface.ITokenChecker, error) {
 func (c TokenChecker) CheckActivateUserToken(jwtStr model.Token) (model.UserId, error) {
 	signKey, err := jwt.ParseRSAPublicKeyFromPEM(c.publicKey)
 	if err != nil {
-		return "", errors.CustomError{Message: ParsePublicKeyError, Option: err.Error()}
+		return "", api_error.InternalError(errors.CustomError{Message: ParsePublicKeyError, Option: err.Error()})
 	}
 
 	token, err := jwt.Parse(string(jwtStr), func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
-			return nil, errors.CustomError{Message: UnexpectedSigningMethod, Option: err.Error()}
+			return nil, api_error.InvalidRequestError(errors.CustomError{Message: UnexpectedSigningMethod, Option: err.Error()})
 		} else {
 			return signKey, nil
 		}
 	})
 	if err != nil {
-		return "", errors.CustomError{Message: ParseTokenError, Option: err.Error()}
+		return "", api_error.InvalidRequestError(errors.CustomError{Message: ParseTokenError, Option: err.Error()})
 	}
 
 	if token.Valid {
 		claims, ok := token.Claims.(jwt.MapClaims)
 		if !ok {
-			return "", errors.CustomError{Message: InvalidTokenFormat}
+			return "", api_error.InvalidRequestError(errors.CustomError{Message: InvalidTokenFormat})
 		}
 		userId, ok := claims["user_id"].(string)
 		if !ok {
-			return "", errors.CustomError{Message: InvalidTokenFormat, Option: "failed to get user_id from token"}
+			return "", api_error.InvalidRequestError(errors.CustomError{Message: InvalidTokenFormat, Option: "failed to get user_id from token"})
 		}
 		expiredAt, ok := claims["exp"].(string)
 		if !ok {
-			return "", errors.CustomError{Message: InvalidTokenFormat, Option: "failed to get exp from token"}
+			return "", api_error.InvalidRequestError(errors.CustomError{Message: InvalidTokenFormat, Option: "failed to get exp from token"})
 		}
 		exp, err := strconv.Atoi(expiredAt)
 		if err != nil {
-			return "", errors.CustomError{Message: InvalidTokenFormat, Option: err.Error()}
+			return "", api_error.InvalidRequestError(errors.CustomError{Message: InvalidTokenFormat, Option: err.Error()})
 		}
 		if isExpired(exp) {
-			return "", errors.CustomError{Message: TokenIsExpired}
+			return "", api_error.InvalidRequestError(errors.CustomError{Message: TokenIsExpired})
 		}
 		return model.UserId(userId), nil
 	} else if ve, ok := err.(*jwt.ValidationError); ok {
@@ -86,11 +87,11 @@ func (c TokenChecker) CheckActivateUserToken(jwtStr model.Token) (model.UserId, 
 		} else if ve.Errors&(jwt.ValidationErrorExpired) != 0 {
 			return "", errors.CustomError{Message: Expired, Option: ve.Error()}
 		} else if ve.Errors&(jwt.ValidationErrorNotValidYet) != 0 {
-			return "", errors.CustomError{Message: NotValidYet, Option: ve.Error()}
+			return "", api_error.InvalidRequestError(errors.CustomError{Message: NotValidYet, Option: ve.Error()})
 		} else {
-			return "", errors.CustomError{Message: CanNotHandle, Option: ve.Error()}
+			return "", api_error.InvalidRequestError(errors.CustomError{Message: CanNotHandle, Option: ve.Error()})
 		}
 	} else {
-		return "", errors.CustomError{Message: CanNotHandle, Option: ve.Error()}
+		return "", api_error.InvalidRequestError(errors.CustomError{Message: CanNotHandle, Option: ve.Error()})
 	}
 }
