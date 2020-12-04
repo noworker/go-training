@@ -57,7 +57,7 @@ func (repository userRepository) UserExists(userId model.UserId, password string
 	return true
 }
 
-func (repository userRepository) GetUserByIdAndPassword(userId model.UserId, password string) (table.User, error) {
+func (repository userRepository) getUserPassword(userId model.UserId, password string) error {
 	userPassword := table.UserPassword{}
 	conn := map[string]interface{}{
 		"user_id": userId,
@@ -65,34 +65,42 @@ func (repository userRepository) GetUserByIdAndPassword(userId model.UserId, pas
 
 	result := repository.DB.Where(conn).Find(&userPassword)
 	if err := result.Error; err != nil {
-		return table.User{}, errors.CustomError{Message: UserNotFoundError,
+		return errors.CustomError{Message: UserNotFoundError,
 			Option: "UserRepository:66"}
 	}
 
 	if result.RecordNotFound() {
-		return table.User{}, errors.CustomError{Message: UserNotFoundError}
+		return errors.CustomError{Message: UserNotFoundError}
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(userPassword.Password), []byte(password)); err != nil {
-		return table.User{}, errors.CustomError{Message: InvalidPassword}
+		return errors.CustomError{Message: InvalidPassword}
+	}
+
+	return nil
+}
+
+func (repository userRepository) GetUserByIdAndPassword(userId model.UserId, password string) (model.User, error) {
+	if err := repository.getUserPassword(userId, password); err != nil {
+		return model.User{}, err
 	}
 
 	user := table.User{}
-	conn2 := map[string]interface{}{
+	conn := map[string]interface{}{
 		"user_id": userId,
 	}
 
-	result = repository.DB.Where(conn2).Find(&user)
+	result := repository.DB.Where(conn).First(&user)
 	if err := result.Error; err != nil {
-		return table.User{}, errors.CustomError{Message: UserNotFoundError,
+		return model.User{}, errors.CustomError{Message: UserNotFoundError,
 			Option: "UserRepository:80"}
 	}
 
 	if result.RecordNotFound() {
-		return table.User{}, errors.CustomError{Message: UserNotFoundError}
+		return model.User{}, errors.CustomError{Message: UserNotFoundError}
 	}
 
-	return user, nil
+	return user.MapToModel(), nil
 }
 
 func (repository userRepository) CreateNewUser(user model.User, rawPassword string, hashedPassword lib.HashedByteString) error {
