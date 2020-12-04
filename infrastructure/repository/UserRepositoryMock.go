@@ -2,7 +2,6 @@ package repository
 
 import (
 	"go_training/domain/model"
-	"go_training/infrastructure/table"
 	"go_training/lib"
 	"go_training/lib/errors"
 	"go_training/web/api_error"
@@ -45,9 +44,9 @@ func (repository UserRepositoryMock) UserExists(userId model.UserId, password li
 	return true
 }
 
-func (repository UserRepositoryMock) GetUserByIdAndPassword(userId model.UserId, password string) (table.User, error) {
+func (repository UserRepositoryMock) GetUserByIdAndPassword(userId model.UserId, password string) (model.User, error) {
 	if userId != repository.UserId || password != repository.Password {
-		return table.User{}, errors.CustomError{Message: UserNotFoundError}
+		return model.User{}, errors.CustomError{Message: UserNotFoundError}
 	}
-	return table.User{}, nil
+	return model.User{}, nil
 }
