@@ -8,6 +8,7 @@ import (
 type IUserRepository interface {
 	Activate(userId model.UserId) error
 	GetUserByIdAndPassword(userId model.UserId, password string) (model.User, error)
+	GetUserById(userId model.UserId) (model.User, error)
 	CreateNewUser(user model.User, rawPassword string, hashedPassword lib.HashedByteString) error
 	CheckIfUserIsActivated(userId model.UserId) error
 }

@@ -88,11 +88,7 @@ func (repository userRepository) getUserPassword(userId model.UserId, password s
 	return nil
 }
 
-func (repository userRepository) GetUserByIdAndPassword(userId model.UserId, password string) (model.User, error) {
-	if err := repository.getUserPassword(userId, password); err != nil {
-		return model.User{}, err
-	}
-
+func (repository userRepository) GetUserById(userId model.UserId) (model.User, error) {
 	user := table.User{}
 	conn := map[string]interface{}{
 		"user_id": userId,
@@ -108,6 +104,14 @@ func (repository userRepository) GetUserByIdAndPassword(userId model.UserId, pas
 	}
 
 	return user.MapToModel(), nil
+}
+
+func (repository userRepository) GetUserByIdAndPassword(userId model.UserId, password string) (model.User, error) {
+	if err := repository.getUserPassword(userId, password); err != nil {
+		return model.User{}, err
+	}
+
+	return repository.GetUserById(userId)
 }
 
 func (repository userRepository) CreateNewUser(user model.User, rawPassword string, hashedPassword lib.HashedByteString) error {
