@@ -14,9 +14,9 @@ import (
 	"testing"
 )
 
-func initActivateUserHandlerMock(userId, token string) Handlers {
-	tokenChecker, _ := jw_token.NewTokenCheckerMock(model.UserId(userId), token)
-	repo := repository.NewUserRepositoryMock(userId, "password", "aaa@example.com")
+func initActivateUserHandlerMock(tokenCheckerUserId, repositoryUserId, token string) Handlers {
+	tokenChecker, _ := jw_token.NewTokenCheckerMock(model.UserId(tokenCheckerUserId), token)
+	repo := repository.NewUserRepositoryMock(repositoryUserId, "password", "aaa@example.com")
 	activateUserService := service.NewActivateUserService(tokenChecker, repo)
 	return InitHandler(
 		initializer.Repositories{},
@@ -26,9 +26,8 @@ func initActivateUserHandlerMock(userId, token string) Handlers {
 		initializer.Infras{})
 }
 
-func TestActivateUserHandler_ActivateUser(t *testing.T) {
-	token := "token"
-	handlers := initActivateUserHandlerMock("user_id", token)
+func ActivateUserHandlerTester(repoMockUserId, tokenMockUserId, token, mockToken string) httptest.ResponseRecorder {
+	handlers := initActivateUserHandlerMock(repoMockUserId, tokenMockUserId, mockToken)
 	e := NewRouter(handlers)
 	q := make(url.Values)
 
@@ -39,8 +38,17 @@ func TestActivateUserHandler_ActivateUser(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	e.ServeHTTP(rec, req)
+	return *rec
+}
 
+func TestActivateUserHandler_ActivateUser(t *testing.T) {
+	rec := ActivateUserHandlerTester("userId", "userId", "token", "token")
 	if !assert.Equal(t, http.StatusOK, rec.Code) {
+		t.Error(rec)
+	}
+
+	rec = ActivateUserHandlerTester("userId", "hoge", "token", "token")
+	if !assert.Equal(t, http.StatusBadRequest, rec.Code) {
 		t.Error(rec)
 	}
 }
