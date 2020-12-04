@@ -37,5 +37,7 @@ func NewRouter(handlers Handlers) *echo.Echo {
 	e.POST(fmt.Sprintf("%s/resend_activation_email", apiPrefix), handlers.ResendActivationEmailHandler.ResendActivationEmail)
 
 	e.POST(fmt.Sprintf("%s/login", apiPrefix), handlers.LoginHandler.Login)
+
+	e.GET(fmt.Sprintf("%s/user_info", apiPrefix), handlers.UserInfoHandler.GetUserInfo)
 	return e
 }

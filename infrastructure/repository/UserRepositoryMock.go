@@ -51,6 +51,13 @@ func (repository UserRepositoryMock) UserExists(userId model.UserId, password li
 	return true
 }
 
+func (repository UserRepositoryMock) GetUserById(userId model.UserId) (model.User, error) {
+	return model.User{
+		UserId:       repository.UserId,
+		EmailAddress: repository.EmailAddress,
+	}, nil
+}
+
 func (repository UserRepositoryMock) GetUserByIdAndPassword(userId model.UserId, password string) (model.User, error) {
 	if userId != repository.UserId || password != repository.Password {
 		return model.User{}, api_error.InvalidRequestError(errors.CustomError{Message: UserNotFoundError})

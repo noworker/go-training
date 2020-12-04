@@ -5,10 +5,11 @@ import (
 )
 
 type Handlers struct {
-	CreateUserHandler            CreateUserHandler
-	ActivateUserHandler          ActivateUserHandler
-	ResendActivationEmailHandler ResendActivationEmailHandler
-	LoginHandler                 LoginHandler
+	CreateUserHandler
+	ActivateUserHandler
+	ResendActivationEmailHandler
+	LoginHandler
+	UserInfoHandler
 }
 
 func InitHandler(repositories initializer.Repositories, services initializer.Services, infras initializer.Infras) Handlers {
@@ -29,11 +30,17 @@ func InitHandler(repositories initializer.Repositories, services initializer.Ser
 		tokenGenerator: infras.TokenGenerator,
 	}
 
+	userInfoHandler := UserInfoHandler{
+		userRepository: repositories.UserRepository,
+		tokenChecker:   infras.TokenChecker,
+	}
+
 	handlers := Handlers{
 		CreateUserHandler:            createUserHandler,
 		ActivateUserHandler:          activateUserHandler,
 		ResendActivationEmailHandler: resendActivationEmailHandler,
 		LoginHandler:                 loginHandler,
+		UserInfoHandler:              userInfoHandler,
 	}
 	return handlers
 }
