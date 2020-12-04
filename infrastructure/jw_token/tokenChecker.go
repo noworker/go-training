@@ -43,7 +43,7 @@ func NewTokenChecker(path string) (infrainterface.ITokenChecker, error) {
 	return TokenChecker{publicKey: pubKey}, nil
 }
 
-func (c TokenChecker) CheckActivateUserToken(jwtStr model.Token) (model.UserId, error) {
+func (c TokenChecker) checkToken(jwtStr model.Token, tokenType TokenType) (model.UserId, error) {
 	signKey, err := jwt.ParseRSAPublicKeyFromPEM(c.publicKey)
 	if err != nil {
 		return "", api_error.InternalError(errors.CustomError{Message: ParsePublicKeyError, Option: err.Error()})
@@ -73,6 +73,13 @@ func (c TokenChecker) CheckActivateUserToken(jwtStr model.Token) (model.UserId, 
 		if !ok {
 			return "", api_error.InvalidRequestError(errors.CustomError{Message: InvalidTokenFormat, Option: "failed to get exp from token"})
 		}
+		tokenTypeFromJWT, ok := claims["type"].(string)
+		if !ok {
+			return "", api_error.InvalidRequestError(errors.CustomError{Message: InvalidTokenFormat, Option: "failed to get token type from token"})
+		}
+		if string(tokenType) != tokenTypeFromJWT {
+			return "", api_error.InvalidRequestError(errors.CustomError{Message: InvalidTokenFormat, Option: "failed to get appropriate token type from token"})
+		}
 		exp, err := strconv.Atoi(expiredAt)
 		if err != nil {
 			return "", api_error.InvalidRequestError(errors.CustomError{Message: InvalidTokenFormat, Option: err.Error()})
@@ -94,4 +101,12 @@ func (c TokenChecker) CheckActivateUserToken(jwtStr model.Token) (model.UserId, 
 	} else {
 		return "", api_error.InvalidRequestError(errors.CustomError{Message: CanNotHandle, Option: ve.Error()})
 	}
+}
+
+func (c TokenChecker) CheckActivateUserToken(jwtStr model.Token) (model.UserId, error) {
+	return c.checkToken(jwtStr, Activation)
+}
+
+func (c TokenChecker) CheckLoginUserToken(jwtStr model.Token) (model.UserId, error) {
+	return c.checkToken(jwtStr, Login)
 }

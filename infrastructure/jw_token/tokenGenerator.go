@@ -15,6 +15,13 @@ const (
 	EncodeTokenError     errors.ErrorMessage = "encode token error"
 )
 
+type TokenType string
+
+const (
+	Activation TokenType = "activation"
+	Login      TokenType = "login"
+)
+
 type TokenGenerator struct {
 	privateKeyPath []byte
 }
@@ -27,7 +34,7 @@ func NewTokenGenerator(path string) (TokenGenerator, error) {
 	return TokenGenerator{privateKeyPath: signBytes}, nil
 }
 
-func (g TokenGenerator) GenerateActivateUserToken(userId model.UserId) (model.Token, error) {
+func (g TokenGenerator) generateToken(userId model.UserId, tokenType TokenType) (model.Token, error) {
 	signKey, err := jwt.ParseRSAPrivateKeyFromPEM(g.privateKeyPath)
 	if err != nil {
 		return "", errors.CustomError{Message: ParsePrivateKeyError, Option: err.Error()}
@@ -35,6 +42,7 @@ func (g TokenGenerator) GenerateActivateUserToken(userId model.UserId) (model.To
 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
 		"user_id": userId,
+		"type":    tokenType,
 		"exp":     strconv.Itoa(int(mdate.GetToday().PlusNDay(1).Unix())),
 	})
 
@@ -44,4 +52,12 @@ func (g TokenGenerator) GenerateActivateUserToken(userId model.UserId) (model.To
 	}
 
 	return model.Token(tokenString), nil
+}
+
+func (g TokenGenerator) GenerateActivateUserToken(userId model.UserId) (model.Token, error) {
+	return g.generateToken(userId, Activation)
+}
+
+func (g TokenGenerator) GenerateLoginUserToken(userId model.UserId) (model.Token, error) {
+	return g.generateToken(userId, Login)
 }

@@ -74,7 +74,7 @@ func (repository userRepository) getUserPassword(userId model.UserId, password s
 
 	result := repository.DB.Where(conn).First(&userPassword)
 	if result.RecordNotFound() {
-		return api_error.InvalidRequestError(errors.CustomError{Message: UserNotFoundError, Option: result.Error.Error()})
+		return api_error.NotFoundError(errors.CustomError{Message: UserNotFoundError})
 	}
 
 	if err := result.Error; err != nil {
@@ -82,7 +82,7 @@ func (repository userRepository) getUserPassword(userId model.UserId, password s
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(userPassword.Password), []byte(password)); err != nil {
-		return api_error.InvalidRequestError(errors.CustomError{Message: InvalidPassword, Option: result.Error.Error()})
+		return api_error.NotFoundError(errors.CustomError{Message: InvalidPassword})
 	}
 
 	return nil
