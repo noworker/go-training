@@ -10,7 +10,7 @@ type HashedByteString []byte
 
 const (
 	PasswordIsTooShort errors.ErrorMessage = "password is too short"
-	PasswordItTooLong  errors.ErrorMessage = "password is too long"
+	PasswordIsTooLong  errors.ErrorMessage = "password is too long"
 )
 
 const minPasswordLen = 8
@@ -23,7 +23,7 @@ func MakeHashedStringFromPassword(s string) (HashedByteString, error) {
 		return []byte{}, api_error.InvalidRequestError(errors.CustomError{Message: PasswordIsTooShort})
 	}
 	if len(s) > maxPasswordLen {
-		return []byte{}, api_error.InvalidRequestError(errors.CustomError{Message: PasswordItTooLong})
+		return []byte{}, api_error.InvalidRequestError(errors.CustomError{Message: PasswordIsTooLong})
 	}
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(s), bcryptCost)
 	if err != nil {
