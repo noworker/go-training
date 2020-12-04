@@ -13,7 +13,7 @@ func TestJWT(t *testing.T) {
 		t.Error(err.Error())
 	}
 
-	token, err := g.GenerateActivateUserToken("user_id")
+	activationToken, err := g.GenerateActivateUserToken("user_id")
 	if err != nil {
 		t.Error(err.Error())
 	}
@@ -23,12 +23,33 @@ func TestJWT(t *testing.T) {
 		t.Error(err.Error())
 	}
 
-	userId, err := c.CheckActivateUserToken(token)
+	userId, err := c.CheckActivateUserToken(activationToken)
 	if err != nil {
 		t.Error(err.Error())
 	}
 
 	if userId != "user_id" {
+		t.Error("error")
+	}
+
+	_, err = c.CheckLoginUserToken(activationToken)
+	if err == nil {
+		t.Error("error")
+	}
+
+	loginToken, err := g.GenerateLoginUserToken("user_id")
+
+	userId, err = c.CheckLoginUserToken(loginToken)
+	if err != nil {
+		t.Error(err.Error())
+	}
+
+	if userId != "user_id" {
+		t.Error("error")
+	}
+
+	_, err = c.CheckActivateUserToken(loginToken)
+	if err == nil {
 		t.Error("error")
 	}
 }
