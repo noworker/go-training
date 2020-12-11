@@ -5,9 +5,10 @@ import (
 )
 
 type Services struct {
-	CreateUserService            service.CreateUserService
-	ActivateUserService          service.ActivateUserService
-	ResendActivationEmailService service.ResendActivationEmailService
+	service.CreateUserService
+	service.ActivateUserService
+	service.ResendActivationEmailService
+	service.LoginService
 }
 
 func InitServices(repositories Repositories, infras Infras) Services {
@@ -27,9 +28,17 @@ func InitServices(repositories Repositories, infras Infras) Services {
 		TokenGenerator: infras.TokenGenerator,
 		EmailSender:    infras.EmailSender,
 	}
+
+	loginService := service.LoginService{
+		UserRepository: repositories.UserRepository,
+		TokenGenerator: infras.TokenGenerator,
+		EmailSender:    infras.EmailSender,
+	}
+
 	return Services{
 		CreateUserService:            createUserService,
 		ActivateUserService:          activateUserService,
 		ResendActivationEmailService: resendActivationEmailService,
+		LoginService:                 loginService,
 	}
 }

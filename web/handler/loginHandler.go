@@ -2,15 +2,13 @@ package handler
 
 import (
 	"github.com/labstack/echo/v4"
-	"go_training/domain/infrainterface"
-	"go_training/domain/model"
+	"go_training/domain/service"
 	"go_training/web/api_error"
 	"net/http"
 )
 
 type LoginHandler struct {
-	userRepository infrainterface.IUserRepository
-	tokenGenerator infrainterface.ITokenGenerator
+	loginService service.LoginService
 }
 
 type UserPassword struct {
@@ -30,11 +28,7 @@ func (handler LoginHandler) Login(c echo.Context) error {
 		return api_error.InvalidRequestError(err)
 	}
 
-	if _, err := handler.userRepository.GetUserByIdAndPassword(model.UserId(user.UserId), user.Password); err != nil {
-		return err
-	}
-
-	token, err := handler.tokenGenerator.GenerateLoginUserToken(model.UserId(user.UserId))
+	token, err := handler.loginService.Login(user.UserId, user.Password)
 	if err != nil {
 		return err
 	}

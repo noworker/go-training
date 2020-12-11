@@ -26,8 +26,7 @@ func InitHandler(repositories initializer.Repositories, services initializer.Ser
 	}
 
 	loginHandler := LoginHandler{
-		userRepository: repositories.UserRepository,
-		tokenGenerator: infras.TokenGenerator,
+		loginService: services.LoginService,
 	}
 
 	userInfoHandler := UserInfoHandler{
