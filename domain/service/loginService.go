@@ -11,10 +11,17 @@ type LoginService struct {
 	EmailSender    infrainterface.IEmail
 }
 
-func (service LoginService) Login(userId, password string) (model.Token, error) {
-	if _, err := service.UserRepository.GetUserByIdAndPassword(model.UserId(userId), password); err != nil {
-		return "", err
+func (service LoginService) Login(userId, password string) error {
+	user, err := service.UserRepository.GetUserByIdAndPassword(model.UserId(userId), password)
+	if err != nil {
+		return err
 	}
 
-	return service.TokenGenerator.GenerateLoginUserToken(model.UserId(userId))
+	token, err := service.TokenGenerator.GenerateTwoStepVerificationToken(model.UserId(userId))
+	if err != nil {
+		return err
+	}
+
+	go service.EmailSender.SendActivationEmail(user.EmailAddress, token)
+	return nil
 }

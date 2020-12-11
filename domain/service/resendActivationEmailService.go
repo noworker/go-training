@@ -38,6 +38,6 @@ func (service ResendActivationEmailService) ResendActivationEmail(userId model.U
 		return api_error.InvalidRequestError(err)
 	}
 
-	go service.EmailSender.SendEmail(address, token)
+	go service.EmailSender.SendActivationEmail(address, token)
 	return nil
 }

@@ -12,5 +12,8 @@ func NewEmailSenderMock(address model.EmailAddress, password string) infrainterf
 	return SenderMock{}
 }
 
-func (sender SenderMock) SendEmail(address model.EmailAddress, token model.Token) {
+func (sender SenderMock) SendActivationEmail(address model.EmailAddress, token model.Token) {
+}
+
+func (sender SenderMock) SendVerificationEmail(address model.EmailAddress, token model.Token) {
 }

@@ -28,14 +28,12 @@ func (handler LoginHandler) Login(c echo.Context) error {
 		return api_error.InvalidRequestError(err)
 	}
 
-	token, err := handler.loginService.Login(user.UserId, user.Password)
-	if err != nil {
+	if err := handler.loginService.Login(user.UserId, user.Password); err != nil {
 		return err
 	}
 
 	response := LoginResponse{
 		UserId: user.UserId,
-		Token:  string(token),
 	}
 
 	return c.JSON(http.StatusOK, response)

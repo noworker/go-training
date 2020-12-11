@@ -44,7 +44,7 @@ func (service CreateUserService) SendTokenMail(userId, address string) error {
 		return api_error.InternalError(err)
 	}
 
-	go service.EmailSender.SendEmail(model.EmailAddress(address), token)
+	go service.EmailSender.SendActivationEmail(model.EmailAddress(address), token)
 
 	return nil
 }
