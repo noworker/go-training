@@ -110,3 +110,7 @@ func (c TokenChecker) CheckActivateUserToken(jwtStr model.Token) (model.UserId, 
 func (c TokenChecker) CheckLoginUserToken(jwtStr model.Token) (model.UserId, error) {
 	return c.checkToken(jwtStr, Login)
 }
+
+func (c TokenChecker) CheckTwoStepVerificationToken(jwtStr model.Token) (model.UserId, error) {
+	return c.checkToken(jwtStr, Verification)
+}

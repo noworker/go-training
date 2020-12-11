@@ -16,3 +16,7 @@ func (g TokenGeneratorMock) GenerateActivateUserToken(userId model.UserId) (mode
 func (g TokenGeneratorMock) GenerateLoginUserToken(userId model.UserId) (model.Token, error) {
 	return "token", nil
 }
+
+func (g TokenGeneratorMock) GenerateTwoStepVerificationToken(userId model.UserId) (model.Token, error) {
+	return "token", nil
+}

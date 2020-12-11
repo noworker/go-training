@@ -18,8 +18,9 @@ const (
 type TokenType string
 
 const (
-	Activation TokenType = "activation"
-	Login      TokenType = "login"
+	Activation   TokenType = "Activation"
+	Verification TokenType = "Verification"
+	Login        TokenType = "Login"
 )
 
 type TokenGenerator struct {
@@ -60,4 +61,8 @@ func (g TokenGenerator) GenerateActivateUserToken(userId model.UserId) (model.To
 
 func (g TokenGenerator) GenerateLoginUserToken(userId model.UserId) (model.Token, error) {
 	return g.generateToken(userId, Login)
+}
+
+func (g TokenGenerator) GenerateTwoStepVerificationToken(userId model.UserId) (model.Token, error) {
+	return g.generateToken(userId, Verification)
 }
