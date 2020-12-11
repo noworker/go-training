@@ -17,8 +17,7 @@ type UserPassword struct {
 }
 
 type LoginResponse struct {
-	UserId string `json:"user_id"`
-	Token  string `json:"token"`
+	Status string `json:"status"`
 }
 
 func (handler LoginHandler) Login(c echo.Context) error {
@@ -33,7 +32,7 @@ func (handler LoginHandler) Login(c echo.Context) error {
 	}
 
 	response := LoginResponse{
-		UserId: user.UserId,
+		Status: "2段階認証Eメールが送信されました。",
 	}
 
 	return c.JSON(http.StatusOK, response)

@@ -22,6 +22,6 @@ func (service LoginService) Login(userId, password string) error {
 		return err
 	}
 
-	go service.EmailSender.SendActivationEmail(user.EmailAddress, token)
+	go service.EmailSender.SendTwoStepVerificationEmail(user.EmailAddress, token)
 	return nil
 }
