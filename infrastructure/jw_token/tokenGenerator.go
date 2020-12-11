@@ -2,7 +2,6 @@ package jw_token
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	mdate "github.com/matsuri-tech/date-go"
 	"go_training/domain/model"
 	"go_training/lib/errors"
 	"io/ioutil"
@@ -35,7 +34,7 @@ func NewTokenGenerator(path string) (TokenGenerator, error) {
 	return TokenGenerator{privateKeyPath: signBytes}, nil
 }
 
-func (g TokenGenerator) generateToken(userId model.UserId, tokenType TokenType) (model.Token, error) {
+func (g TokenGenerator) generateToken(userId model.UserId, tokenType TokenType, expiresAt model.UnixTime) (model.Token, error) {
 	signKey, err := jwt.ParseRSAPrivateKeyFromPEM(g.privateKeyPath)
 	if err != nil {
 		return "", errors.CustomError{Message: ParsePrivateKeyError, Option: err.Error()}
@@ -44,7 +43,7 @@ func (g TokenGenerator) generateToken(userId model.UserId, tokenType TokenType) 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
 		"user_id": userId,
 		"type":    tokenType,
-		"exp":     strconv.Itoa(int(mdate.GetToday().PlusNDay(1).Unix())),
+		"exp":     strconv.Itoa(int(expiresAt)),
 	})
 
 	tokenString, err := token.SignedString(signKey)
@@ -56,13 +55,13 @@ func (g TokenGenerator) generateToken(userId model.UserId, tokenType TokenType) 
 }
 
 func (g TokenGenerator) GenerateActivateUserToken(userId model.UserId) (model.Token, error) {
-	return g.generateToken(userId, Activation)
+	return g.generateToken(userId, Activation, model.CurrentUnixTime().AddMinutes(10))
 }
 
 func (g TokenGenerator) GenerateLoginUserToken(userId model.UserId) (model.Token, error) {
-	return g.generateToken(userId, Login)
+	return g.generateToken(userId, Login, model.CurrentUnixTime().AddHours(24*30))
 }
 
 func (g TokenGenerator) GenerateTwoStepVerificationToken(userId model.UserId) (model.Token, error) {
-	return g.generateToken(userId, Verification)
+	return g.generateToken(userId, Verification, model.CurrentUnixTime().AddMinutes(10))
 }

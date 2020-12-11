@@ -8,7 +8,6 @@ import (
 	"go_training/web/api_error"
 	"io/ioutil"
 	"strconv"
-	"time"
 )
 
 const (
@@ -23,9 +22,9 @@ const (
 	TokenIsExpired          errors.ErrorMessage = "token is expired"
 )
 
-func isExpired(exp int) bool {
-	now := time.Now().Unix()
-	if exp < int(now) {
+func isExpired(exp model.UnixTime) bool {
+	now := model.CurrentUnixTime()
+	if exp.Before(now) {
 		return true
 	}
 	return false
@@ -84,7 +83,7 @@ func (c TokenChecker) checkToken(jwtStr model.Token, tokenType TokenType) (model
 		if err != nil {
 			return "", api_error.InvalidRequestError(errors.CustomError{Message: InvalidTokenFormat, Option: err.Error()})
 		}
-		if isExpired(exp) {
+		if isExpired(model.UnixTime(exp)) {
 			return "", api_error.InvalidRequestError(errors.CustomError{Message: TokenIsExpired})
 		}
 		return model.UserId(userId), nil
