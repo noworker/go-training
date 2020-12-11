@@ -38,6 +38,8 @@ func NewRouter(handlers Handlers) *echo.Echo {
 
 	e.POST(fmt.Sprintf("%s/login", apiPrefix), handlers.LoginHandler.Login)
 
+	e.GET(fmt.Sprintf("%s/verification", apiPrefix), handlers.VerificationHandler.Verify)
+
 	e.GET(fmt.Sprintf("%s/user_info", apiPrefix), handlers.UserInfoHandler.GetUserInfo)
 	return e
 }

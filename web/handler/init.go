@@ -10,6 +10,7 @@ type Handlers struct {
 	ResendActivationEmailHandler
 	LoginHandler
 	UserInfoHandler
+	VerificationHandler
 }
 
 func InitHandler(repositories initializer.Repositories, services initializer.Services, infras initializer.Infras) Handlers {
@@ -34,12 +35,17 @@ func InitHandler(repositories initializer.Repositories, services initializer.Ser
 		tokenChecker:   infras.TokenChecker,
 	}
 
+	verificationHandler := VerificationHandler{
+		TwoStepVerificationService: services.TwoStepVerificationService,
+	}
+
 	handlers := Handlers{
 		CreateUserHandler:            createUserHandler,
 		ActivateUserHandler:          activateUserHandler,
 		ResendActivationEmailHandler: resendActivationEmailHandler,
 		LoginHandler:                 loginHandler,
 		UserInfoHandler:              userInfoHandler,
+		VerificationHandler:          verificationHandler,
 	}
 	return handlers
 }

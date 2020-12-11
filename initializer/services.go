@@ -9,6 +9,7 @@ type Services struct {
 	service.ActivateUserService
 	service.ResendActivationEmailService
 	service.LoginService
+	service.TwoStepVerificationService
 }
 
 func InitServices(repositories Repositories, infras Infras) Services {
@@ -35,10 +36,15 @@ func InitServices(repositories Repositories, infras Infras) Services {
 		EmailSender:    infras.EmailSender,
 	}
 
+	twoStepVerificationService := service.TwoStepVerificationService{
+		TokenChecker:   infras.TokenChecker,
+		TokenGenerator: infras.TokenGenerator,
+	}
 	return Services{
 		CreateUserService:            createUserService,
 		ActivateUserService:          activateUserService,
 		ResendActivationEmailService: resendActivationEmailService,
 		LoginService:                 loginService,
+		TwoStepVerificationService:   twoStepVerificationService,
 	}
 }
