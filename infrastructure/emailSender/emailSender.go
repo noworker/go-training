@@ -21,7 +21,7 @@ func (sender Sender) SendActivationEmail(address model.EmailAddress, token model
 	sender.sendEmail(address, string(tokenURL))
 }
 
-func (sender Sender) SendVerificationEmail(address model.EmailAddress, token model.Token) {
+func (sender Sender) SendTwoStepVerificationEmail(address model.EmailAddress, token model.Token) {
 	tokenURL := "http://localhost:8080/api/verification?token=" + token
 	sender.sendEmail(address, string(tokenURL))
 }
