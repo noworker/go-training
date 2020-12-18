@@ -40,6 +40,6 @@ func NewRouter(handlers Handlers) *echo.Echo {
 
 	e.GET(fmt.Sprintf("%s/verification", apiPrefix), handlers.VerificationHandler.Verify)
 
-	e.GET(fmt.Sprintf("%s/user_info", apiPrefix), handlers.UserInfoHandler.GetUserInfo)
+	e.GET(fmt.Sprintf("%s/user_info/:user_id", apiPrefix), handlers.UserInfoHandler.GetUserInfo)
 	return e
 }

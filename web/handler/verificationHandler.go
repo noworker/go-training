@@ -21,10 +21,10 @@ func (handler VerificationHandler) Verify(c echo.Context) error {
 	}
 
 	cookie := new(http.Cookie)
-	cookie.Name = "token"
+	cookie.Name = "login_token"
 	cookie.Value = string(loginToken)
 	cookie.Expires = time.Now().Add(24 * time.Hour)
 	c.SetCookie(cookie)
 
-	return c.Redirect(http.StatusSeeOther, fmt.Sprintf("/api/user_info?user_id=%s&token=%s", userId, loginToken))
+	return c.Redirect(http.StatusSeeOther, fmt.Sprintf("/api/user_info/%s", userId))
 }

@@ -11,6 +11,7 @@ import (
 
 const (
 	UserIsNotActivated errors.ErrorMessage = "user_is_not_activated"
+	TokenIsInvalid     errors.ErrorMessage = "token_is_invalid"
 )
 
 type UserToken struct {
@@ -29,9 +30,15 @@ type UserInfoHandler struct {
 }
 
 func (handler UserInfoHandler) GetUserInfo(c echo.Context) error {
-	userId := c.QueryParam("user_id")
-	token := c.QueryParam("token")
-	if _, err := handler.tokenChecker.CheckLoginUserToken(model.Token(token)); err != nil {
+	userId := c.Param("user_id")
+	token, err := c.Cookie("login_token")
+	if err != nil {
+		return api_error.InvalidRequestError(errors.CustomError{
+			Message: TokenIsInvalid,
+			Option:  err.Error(),
+		})
+	}
+	if _, err := handler.tokenChecker.CheckLoginUserToken(model.Token(token.Value)); err != nil {
 		return err
 	}
 
