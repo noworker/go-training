@@ -10,16 +10,16 @@ type TwoStepVerificationService struct {
 	TokenGenerator infrainterface.ITokenGenerator
 }
 
-func (service TwoStepVerificationService) Verify(token model.Token) (model.Token, error) {
+func (service TwoStepVerificationService) Verify(token model.Token) (model.UserId, model.Token, error) {
 	userID, err := service.TokenChecker.CheckTwoStepVerificationToken(token)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	loginToken, err := service.TokenGenerator.GenerateLoginUserToken(userID)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
-	return loginToken, nil
+	return userID, loginToken, nil
 }

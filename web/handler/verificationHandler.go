@@ -1,27 +1,30 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/labstack/echo/v4"
 	"go_training/domain/model"
 	"go_training/domain/service"
 	"net/http"
+	"time"
 )
 
 type VerificationHandler struct {
 	service.TwoStepVerificationService
 }
-type VerifyResponse struct {
-	LoginToken model.Token `json:"login_token"`
-}
 
 func (handler VerificationHandler) Verify(c echo.Context) error {
 	token := c.QueryParam("token")
-	loginToken, err := handler.TwoStepVerificationService.Verify(model.Token(token))
+	userId, loginToken, err := handler.TwoStepVerificationService.Verify(model.Token(token))
 	if err != nil {
 		return err
 	}
 
-	response := VerifyResponse{LoginToken: loginToken}
+	cookie := new(http.Cookie)
+	cookie.Name = "token"
+	cookie.Value = string(loginToken)
+	cookie.Expires = time.Now().Add(24 * time.Hour)
+	c.SetCookie(cookie)
 
-	return c.JSON(http.StatusOK, response)
+	return c.Redirect(http.StatusSeeOther, fmt.Sprintf("/api/user_info?user_id=%s&token=%s", userId, loginToken))
 }
