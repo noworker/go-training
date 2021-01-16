@@ -17,7 +17,7 @@ import (
 type KeyGenerator struct {
 	path       string
 	privateKey *rsa.PrivateKey
-	pubKey     rsa.PublicKey
+	pubKey     *rsa.PublicKey
 }
 
 func NewKeyGenerator(path string) KeyGenerator {
@@ -27,7 +27,7 @@ func NewKeyGenerator(path string) KeyGenerator {
 	key, err := rsa.GenerateKey(reader, bitSize)
 	mustKeyGen(err)
 
-	return KeyGenerator{path: path, privateKey: key, pubKey: key.PublicKey}
+	return KeyGenerator{path: path, privateKey: key, pubKey: &key.PublicKey}
 }
 
 func (g KeyGenerator) Generate(conf config.Config) {
